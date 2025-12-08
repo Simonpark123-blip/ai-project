@@ -1,8 +1,8 @@
 package project.ai.customAi.pojo;
 
 import lombok.Data;
-import project.ai.customAi.service.Activation;
-import project.ai.customAi.service.ActivationFunction;
+import project.ai.customAi.service.perceptron.Activation;
+import project.ai.customAi.service.perceptron.ActivationFunction;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -40,10 +40,10 @@ public class Neuron {
         return 2 * random.nextDouble() - 1; // -1 < weight < 1
     }
 
-    public double getOutput(double[] x, ActivationFunction activationFunction) {
+    public double getOutput(double[] input, ActivationFunction activationFunction) {
         double output = 0;
         for (int i = 0; i < numberOfInputSignals; i++)
-            output += x[i] * weights[i];                    // weights
+            output += input[i] * weights[i];                // weights
         output += 1 * weights[numberOfInputSignals];        // bias
 
         switch (activationFunction) {

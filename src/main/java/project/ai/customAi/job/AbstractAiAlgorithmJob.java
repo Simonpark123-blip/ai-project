@@ -1,9 +1,11 @@
-package project.ai.customAi.service;
+package project.ai.customAi.job;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import project.ai.customAi.logConstants.Prefix;
 import project.ai.customAi.logConstants.PrefixConstant;
+import project.ai.customAi.service.AiAlgorithm;
+import project.ai.customAi.service.straightForward.StraightForwardAlg;
 
 import java.io.BufferedReader;
 import java.io.File;

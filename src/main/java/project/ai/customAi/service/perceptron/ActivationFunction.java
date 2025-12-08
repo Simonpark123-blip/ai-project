@@ -1,4 +1,4 @@
-package project.ai.customAi.service;
+package project.ai.customAi.service.perceptron;
 
 public enum ActivationFunction {
     ONLYSUM, HEAVISIDE, SIGMOID

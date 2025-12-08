@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import project.ai.customAi.service.StraightForwardAlg;
+import project.ai.customAi.service.straightForward.StraightForwardAlg;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.BufferedReader;
@@ -102,5 +102,7 @@ public class StraightForwardAlgTests {
         //check
         assertEquals(expectedResult, actualResult, "wrongSynonymResult");
     }
+
+    // -> usage of perceptron
 
 }
