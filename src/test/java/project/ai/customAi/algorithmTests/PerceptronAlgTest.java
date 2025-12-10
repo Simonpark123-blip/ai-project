@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class PerceptronAlgTest {
+class PerceptronAlgTest {
 
     private PerceptronAlg perceptronAlg;
 
@@ -24,24 +24,23 @@ public class PerceptronAlgTest {
     }
 
     @Test
-    public void testPerceptronAlg_returns_LogicalAndResultUnderfitting() {
+    void testPerceptronAlg_returns_LogicalAndResultUnderfitting() {
         //prepare
         String logicalOperation = LogicalOperation.AND.name();
-        Map<String, String> data = Map.of("epochs", String.valueOf(25));
+        Map<String, String> data = Map.of("epochs", String.valueOf(50));
         Map<String, String> expectedOutput = Map.of("percentage", "100.0");
 
         //act
         Map<String, String> actualResult = perceptronAlg.handleAlgorithm(logicalOperation, data);
 
         //check
-        assertEquals(expectedOutput, actualResult, "inAccuratePercentageUnderfitting");
+        assertEquals(expectedOutput, actualResult, "inaccuratePercentageUnderfitting");
     }
 
     @Test
-    public void testPerceptronAlg_returns_LogicalAndResultHighEpochs() {
+    void testPerceptronAlg_returns_LogicalAndResultHighEpochs() {
         //prepare
         String logicalOperation = LogicalOperation.AND.name();
-        Map<String, String> data = Map.of("epochs", String.valueOf(100));
         Map<String, String> expectedOutput = Map.of("percentage", "100.0");
 
         //act
@@ -52,7 +51,7 @@ public class PerceptronAlgTest {
     }
 
     @Test
-    public void testPerceptronAlg_returns_LogicalOrResult() {
+    void testPerceptronAlg_returns_LogicalOrResult() {
         //prepare
         String logicalOperation = LogicalOperation.OR.name();
         Map<String, String> expectedOutput = Map.of("percentage", "100.0");
@@ -65,7 +64,7 @@ public class PerceptronAlgTest {
     }
 
     @Test
-    public void testPerceptronAlg_returns_LogicalXorResult() {
+    void testPerceptronAlg_returns_LogicalXorResult() {
         //prepare
         String logicalOperation = LogicalOperation.XOR.name();
         Map<String, String> expectedOutput = Map.of("percentage", "100.0");
