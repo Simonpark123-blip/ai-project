@@ -1,9 +1,9 @@
 package project.ai.customAi.service.perceptron;
 
 import lombok.extern.slf4j.Slf4j;
-import project.ai.customAi.pojo.Neuron;
-import project.ai.customAi.pojo.ProcessMonitoring;
-import project.ai.customAi.pojo.TrainingParameter;
+import project.ai.customAi.pojo.perceptron.Neuron;
+import project.ai.customAi.pojo.perceptron.ProcessMonitoring;
+import project.ai.customAi.pojo.perceptron.TrainingParameter;
 
 import java.util.Random;
 

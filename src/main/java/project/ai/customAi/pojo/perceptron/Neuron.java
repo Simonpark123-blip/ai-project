@@ -1,4 +1,4 @@
-package project.ai.customAi.pojo;
+package project.ai.customAi.pojo.perceptron;
 
 import lombok.Data;
 import project.ai.customAi.service.perceptron.Activation;

@@ -1,4 +1,4 @@
-package project.ai.customAi.pojo;
+package project.ai.customAi.pojo.perceptron;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
