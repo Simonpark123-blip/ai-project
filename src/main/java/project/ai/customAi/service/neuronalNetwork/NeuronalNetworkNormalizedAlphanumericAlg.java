@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import project.ai.customAi.pojo.neuronalNetwork.AlphanumericNetworkParameter;
-import project.ai.customAi.pojo.neuronalNetwork.AlphanumericTrainingParameter;
+import project.ai.customAi.pojo.neuronalNetwork.AlphanumericNormalizedNetworkParameter;
+import project.ai.customAi.pojo.neuronalNetwork.AlphanumericNormalizedTrainingParameter;
 import project.ai.customAi.pojo.perceptron.TrainingParameter;
 import project.ai.customAi.service.AiAlgorithm;
 import project.ai.customAi.service.perceptron.ActivationFunction;
@@ -19,29 +19,29 @@ import java.util.Map;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Profile("neuronalNetworkAlphanumericUsage")
-public class NeuronalNetworkAlphanumericAlg implements AiAlgorithm {
+@Profile("neuronalNetworkNormalizedAlphanumericUsage")
+public class NeuronalNetworkNormalizedAlphanumericAlg implements AiAlgorithm {
 
     @Override
     public Map<String, String> handleAlgorithm(String logicalOperation, Map<String, String> data) {
         try {
             Instant started = Instant.now();
-
-            AlphaNumericFeedForwardNetwork neuronalNetwork = new AlphaNumericFeedForwardNetwork(
-                    AlphanumericNetworkParameter.numberOfInputSignals,
-                    AlphanumericNetworkParameter.numberOfNeuronsInHiddenLayer,
-                    AlphanumericNetworkParameter.numberOfNeuronsInOutputLayer
+// TODO: feedforwardNetwork abstrahieren
+            AlphanumericNormalizedFeedForwardNetwork neuronalNetwork = new AlphanumericNormalizedFeedForwardNetwork(
+                    AlphanumericNormalizedNetworkParameter.numberOfInputSignals,
+                    AlphanumericNormalizedNetworkParameter.numberOfNeuronsInHiddenLayer,
+                    AlphanumericNormalizedNetworkParameter.numberOfNeuronsInOutputLayer
             );
 
             DisplayMachineLearning.showWeights(neuronalNetwork.getWeightsOfHiddenLayer(), neuronalNetwork.getWeightsOfOutputLayer());
-            neuronalNetwork.testAllInputsAndShowResults(AlphanumericTrainingParameter.inputs, AlphanumericTrainingParameter.targets);
+            neuronalNetwork.testAllInputsAndShowResults(AlphanumericNormalizedTrainingParameter.inputs, AlphanumericNormalizedTrainingParameter.targets);
 
             neuronalNetwork.trainWithSupervisedLearning();
 
             DisplayMachineLearning.showWeights(neuronalNetwork.getWeightsOfHiddenLayer(), neuronalNetwork.getWeightsOfOutputLayer());
-            neuronalNetwork.testAllInputsAndShowResults(AlphanumericTrainingParameter.inputs, AlphanumericTrainingParameter.targets);
+            neuronalNetwork.testAllInputsAndShowResults(AlphanumericNormalizedTrainingParameter.inputs, AlphanumericNormalizedTrainingParameter.targets);
 
-            neuronalNetwork.testAllInputsAndShowResults(AlphanumericTrainingParameter.testInputs, AlphanumericTrainingParameter.testTargets);
+            neuronalNetwork.testAllInputsAndShowResults(AlphanumericNormalizedTrainingParameter.testInputs, AlphanumericNormalizedTrainingParameter.testTargets);
 
             Instant finished = Instant.now();
             log.info("Algorithm execution time: {}ms", Duration.between(started, finished).toMillis());

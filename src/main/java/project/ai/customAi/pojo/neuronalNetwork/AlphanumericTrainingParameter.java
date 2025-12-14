@@ -41,8 +41,6 @@ public class AlphanumericTrainingParameter /* = Hyperparameter */{
                 result[i][charIndex * 26 + oneHotIndex] = 1.0;
             }
         }
-        log.debug(Arrays.deepToString(result));
-        log.debug("Length: {}", result[0].length);
         return result;
     }
 

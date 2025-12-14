@@ -1,15 +1,15 @@
 package project.ai.customAi.service.neuronalNetwork;
 
 import lombok.extern.slf4j.Slf4j;
+import project.ai.customAi.pojo.neuronalNetwork.AlphanumericNormalizedTrainingParameter;
 import project.ai.customAi.pojo.neuronalNetwork.Neuron;
 import project.ai.customAi.pojo.neuronalNetwork.ProcessMonitoring;
-import project.ai.customAi.pojo.neuronalNetwork.AlphanumericTrainingParameter;
 
 import java.util.*;
 import java.util.stream.IntStream;
 
 @Slf4j
-public class AlphaNumericFeedForwardNetwork {
+public class AlphanumericNormalizedFeedForwardNetwork {
 
     private final ArrayList<Neuron> hiddenLayer = new ArrayList<>();
     private final ArrayList<Neuron> outputLayer = new ArrayList<>();
@@ -20,7 +20,7 @@ public class AlphaNumericFeedForwardNetwork {
 
     private final Random rnd = new Random();
 
-    public AlphaNumericFeedForwardNetwork(int inputCount, int hiddenLayerNeurons, int outputLayerNeurons) {
+    public AlphanumericNormalizedFeedForwardNetwork(int inputCount, int hiddenLayerNeurons, int outputLayerNeurons) {
         buildLayer(inputCount, hiddenLayerNeurons, hiddenLayer);
         buildLayer(hiddenLayerNeurons, outputLayerNeurons, outputLayer);
 
@@ -51,7 +51,7 @@ public class AlphaNumericFeedForwardNetwork {
         return weights;
     }
 
-    // forward pass (pure feed-forward)
+    // forward pass
     public void calculateOutput(double[] input) {
         // Hidden layer: weighted sum -> activation
         for (int currentNeuronIndex = 0; currentNeuronIndex < hiddenLayer.size(); currentNeuronIndex++) {
@@ -59,34 +59,31 @@ public class AlphaNumericFeedForwardNetwork {
             lastHiddenOutputs[currentNeuronIndex] = applyActivation(weightedResult);
         }
 
-        // Output layer: weighted sum (logits)
+        // Output layer: weighted sum -> activation
         for (int currentNeuronIndex = 0; currentNeuronIndex < outputLayer.size(); currentNeuronIndex++) {
             double weightedResult = outputLayer.get(currentNeuronIndex).weightedSum(lastHiddenOutputs);
-            lastOutputs[currentNeuronIndex] = weightedResult;
+            lastOutputs[currentNeuronIndex] = applyActivation(weightedResult);
         }
-
-        // softmax per 26-block
-        applyBlockSoftmax(26);
 
         ProcessMonitoring.lastOutputs = lastOutputs;
         ProcessMonitoring.lastOutputsFromHiddenLayer = lastHiddenOutputs;
     }
 
     public void trainWithSupervisedLearning() {
-        int trainingCaseCount = AlphanumericTrainingParameter.inputs.length;
+        int trainingCaseCount = AlphanumericNormalizedTrainingParameter.inputs.length;
 
         // indices to shuffle
         List<Integer> indices = IntStream.range(0, trainingCaseCount).collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
 
         // iterate through epochs
-        for (int epoch = 1; epoch <= AlphanumericTrainingParameter.numberOfEpochs; epoch++) {
+        for (int epoch = 1; epoch <= AlphanumericNormalizedTrainingParameter.numberOfEpochs; epoch++) {
 
             Collections.shuffle(indices, rnd);
 
             // iterate through testCases
             for (int idx : indices) {
-                double[] trainingInput = AlphanumericTrainingParameter.inputs[idx];
-                double[] expectedOutput = AlphanumericTrainingParameter.targets[idx];
+                double[] trainingInput = AlphanumericNormalizedTrainingParameter.inputs[idx];
+                double[] expectedOutput = AlphanumericNormalizedTrainingParameter.targets[idx];
 
                 // forward
                 calculateOutput(trainingInput);
@@ -96,11 +93,11 @@ public class AlphaNumericFeedForwardNetwork {
             }
 
             // logging (current epoch)
-            if (epoch % 10000 == 0) {
+            if (epoch % 10000 == 0 || epoch == AlphanumericNormalizedTrainingParameter.numberOfEpochs) {
                 double totalErr = 0.0;
                 for (int i = 0; i < trainingCaseCount; i++) {
-                    calculateOutput(AlphanumericTrainingParameter.inputs[i]);
-                    totalErr += calculateTotalError(AlphanumericTrainingParameter.targets[i]);
+                    calculateOutput(AlphanumericNormalizedTrainingParameter.inputs[i]);
+                    totalErr += calculateTotalError(AlphanumericNormalizedTrainingParameter.targets[i]);
                 }
                 totalErr /= trainingCaseCount;
                 log.info("Epoch {} - avg total error: {}", epoch, totalErr);
@@ -108,33 +105,12 @@ public class AlphaNumericFeedForwardNetwork {
         }
     }
 
-    private void applyBlockSoftmax(int blockSize) {
-        int blocks = lastOutputs.length / blockSize;
-        for (int b = 0; b < blocks; b++) {
-            int offset = b * blockSize;
-            double max = Double.NEGATIVE_INFINITY;
-            for (int i = 0; i < blockSize; i++) max = Math.max(max, lastOutputs[offset + i]);
-
-            double sum = 0.0;
-            for (int i = 0; i < blockSize; i++) {
-                lastOutputs[offset + i] = Math.exp(lastOutputs[offset + i] - max);
-                sum += lastOutputs[offset + i];
-            }
-            for (int i = 0; i < blockSize; i++) {
-                lastOutputs[offset + i] /= sum;
-            }
-        }
-    }
-
+    // sum of squared errors (SSE) per pattern (return sum of 0.5*(o-t)^2 over outputs)
     private double calculateTotalError(double[] targets) {
-        double loss = 0.0;
-
-        for (int block = 0; block < targets.length; block += 26) {
-            for (int i = 0; i < 26; i++) {
-                loss -= targets[block + i] * Math.log(lastOutputs[block + i] + 1e-9);
-            }
-        }
-        return loss;
+        double totalError = 0;
+        for (int i = 0; i < lastOutputs.length; i++)
+            totalError += 0.5 * Math.pow(lastOutputs[i] - targets[i], 2);
+        return totalError;
     }
 
     private void backpropagateAndUpdate(double[] input, double[] targets) {
@@ -143,9 +119,10 @@ public class AlphaNumericFeedForwardNetwork {
 
         /// output-neurons
         double[] deltaOutput = new double[outputNeuronCount];
-        for (int i = 0; i < outputNeuronCount; i++) {
-            // grad for softmax + cross-entropy
-            deltaOutput[i] = lastOutputs[i] - targets[i];
+        for (int currentNeuronIndex = 0; currentNeuronIndex < outputNeuronCount; currentNeuronIndex++) {
+            double errorWrtOutput = lastOutputs[currentNeuronIndex] - targets[currentNeuronIndex]; // dE/dy
+            double deriv = activationDerivative(lastOutputs[currentNeuronIndex]); // dy/dnet
+            deltaOutput[currentNeuronIndex] = errorWrtOutput * deriv; // dE/dnet
         }
 
         // update output weights: input to output are lastHiddenOutputs
@@ -158,7 +135,7 @@ public class AlphaNumericFeedForwardNetwork {
             for (int outputNeuronIndex = 0; outputNeuronIndex < outputNeuronCount; outputNeuronIndex++) {
                 sum += outputLayer.get(outputNeuronIndex).getWeight(currentNeuronIndex) * deltaOutput[outputNeuronIndex];
             }
-            double hiddenLayerOutput = lastHiddenOutputs[currentNeuronIndex];
+            double hiddenLayerOutput = lastHiddenOutputs[currentNeuronIndex]; // activated output
             double derivHidden = activationDerivative(hiddenLayerOutput);
             deltaHidden[currentNeuronIndex] = derivHidden * sum;
         }
@@ -171,15 +148,15 @@ public class AlphaNumericFeedForwardNetwork {
         for (int i = 0; i < neuronCount; i++) {
             Neuron currentNeuron = layer.get(i);
             int weightCount = currentNeuron.getWeights().length; // inputs + bias
-            // update weights
+            // update weights (without bias)
             for (int currentWeightIndex = 0; currentWeightIndex < weightCount - 1; currentWeightIndex++) {
                 double oldWeight = currentNeuron.getWeight(currentWeightIndex);
-                double deltaWeight = AlphanumericTrainingParameter.learningRate * delta[i] * input[currentWeightIndex];
+                double deltaWeight = AlphanumericNormalizedTrainingParameter.learningRate * delta[i] * input[currentWeightIndex];
                 currentNeuron.setWeight(currentWeightIndex, oldWeight - deltaWeight);
             }
-            // update bias
+            // update bias (last weight)
             double biasOld = currentNeuron.getWeight(weightCount - 1);
-            currentNeuron.setWeight(weightCount - 1, biasOld - AlphanumericTrainingParameter.learningRate * delta[i]);
+            currentNeuron.setWeight(weightCount - 1, biasOld - AlphanumericNormalizedTrainingParameter.learningRate * delta[i]);
         }
     }
 
@@ -191,10 +168,17 @@ public class AlphaNumericFeedForwardNetwork {
             calculateOutput(inputs[i]);
             totalErrorAtAll += calculateTotalError(targets[i]);
 
-            log.info("Expected input of '{}' (length {}) to be '{}' and was '{}' (length {})", inputs[i], inputs[i].length, targets[i], lastOutputs, lastOutputs.length);
-            log.info("Expected input of '{}' to be '{}' and was '{}'", convertBinaryToChar(inputs[i]), convertBinaryToChar(targets[i]), convertBinaryToChar(lastOutputs));
+            log.info("Expected input '{}' (length {}) to result in '{}' and was '{}'", Arrays.toString(inputs[i]), inputs[i].length, Arrays.toString(targets[i]), Arrays.toString(lastOutputs));
+            log.info("Expected input '{}' result in '{}' and was '{}'", convertBinaryToChar(inputs[i]), convertBinaryToChar(targets[i]), convertBinaryToChar(lastOutputs));
 
-            if (outputsMatchTarget(lastOutputs, targets[i])) successCases++;
+            boolean areAllOutputsOK = true;
+            for (int j = 0; j < targets[i].length; j++) {
+                if (Math.abs(lastOutputs[j] - targets[i][j]) > AlphanumericNormalizedTrainingParameter.faultTolerance) {
+                    areAllOutputsOK = false;
+                    break;
+                }
+            }
+            if (areAllOutputsOK) successCases++;
         }
 
         double learnedInPercent = successCases / inputs.length * 100;
@@ -203,48 +187,31 @@ public class AlphaNumericFeedForwardNetwork {
         log.info("Learned percent at all outputs: {}", learnedInPercent);
     }
 
-    private boolean outputsMatchTarget(double[] outputs, double[] targets) {
-        int blocks = outputs.length / 26;
-        for (int b = 0; b < blocks; b++) {
-            int offset = b * 26;
-            int pred = 0, want = 0;
-            for (int i = 0; i < 26; i++) {
-                if (outputs[offset + i] > outputs[offset + pred]) pred = i;
-                if (targets[offset + i] == 1.0) want = i;
-            }
-            if (pred != want) return false;
-        }
-        return true;
-    }
-
-    private char[] convertBinaryToChar(double[] probs) {
-        char[] result = new char[probs.length / 26];
-        for (int block = 0; block < result.length; block++) {
-            int offset = block * 26;
-            int maxIndex = offset;
-            for (int i = offset; i < offset + 26; i++) {
-                if (probs[i] > probs[maxIndex]) {
-                    maxIndex = i;
-                }
-            }
-            result[block] = (char) ('A' + (maxIndex % 26));
+    private char[] convertBinaryToChar(double[] encodedChars) {
+        char[] result = new char[encodedChars.length];
+        for (int i = 0; i < result.length; i++) {
+            int val = (int) Math.round((encodedChars[i] + 1.0) / 2.0 * 25);
+            val = Math.max(0, Math.min(25, val));
+            result[i] = (char) ('A' + val);
         }
         return result;
     }
 
     private double applyActivation(double value) {
-        return switch (AlphanumericTrainingParameter.activationFunction) {
+        return switch (AlphanumericNormalizedTrainingParameter.activationFunction) {
             case SIGMOID -> 1.0 / (1.0 + Math.exp(-value));
             case HEAVISIDE -> value >= 0.0 ? 1.0 : 0.0;
+            case TANH -> Math.tanh(value);
             default -> value;
         };
     }
 
     private double activationDerivative(double activatedValue) {
-        return switch (AlphanumericTrainingParameter.activationFunction) {
+        return switch (AlphanumericNormalizedTrainingParameter.activationFunction) {
             case SIGMOID -> activatedValue * (1.0 - activatedValue);
             case ONLYSUM -> 1.0;
-            default -> throw new IllegalStateException("Not differentiable activation function");
+            case TANH -> 1 - Math.pow(activatedValue, 2);
+            default -> throw new IllegalStateException("Not differentiable activation function: " + AlphanumericNormalizedTrainingParameter.activationFunction);
         };
     }
 
