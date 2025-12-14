@@ -1,4 +1,4 @@
-package project.ai.customAi.pojo;
+package project.ai.customAi.pojo.data;
 
 public class LogicalAndData {
 
@@ -6,12 +6,14 @@ public class LogicalAndData {
             { 0, 0 },
             { 1, 0 },
             { 0, 1 },
-            { 1, 1 } };
+            { 1, 1 }
+    };
 
     public static final double[][] targets = {
             { 0 },
             { 0 },
             { 1 },
-            { 0 } };
+            { 0 }
+    };
 
 }

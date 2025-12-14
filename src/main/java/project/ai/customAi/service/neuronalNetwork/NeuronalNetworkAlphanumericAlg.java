@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import project.ai.customAi.pojo.neuronalNetwork.NetworkParameter;
+import project.ai.customAi.pojo.neuronalNetwork.AlphanumericNetworkParameter;
+import project.ai.customAi.pojo.neuronalNetwork.AlphanumericTrainingParameter;
 import project.ai.customAi.pojo.perceptron.TrainingParameter;
 import project.ai.customAi.service.AiAlgorithm;
 import project.ai.customAi.service.perceptron.ActivationFunction;
@@ -18,25 +19,29 @@ import java.util.Map;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Profile("neuronalNetworkUsage")
-public class NeuronalNetworkAlg implements AiAlgorithm {
+@Profile("neuronalNetworkAlphanumericUsage")
+public class NeuronalNetworkAlphanumericAlg implements AiAlgorithm {
 
     @Override
     public Map<String, String> handleAlgorithm(String logicalOperation, Map<String, String> data) {
         try {
             Instant started = Instant.now();
 
-            FeedForwardNetwork neuronalNetwork = new FeedForwardNetwork(NetworkParameter.numberOfInputSignals,
-                    NetworkParameter.numberOfNeuronsInHiddenLayer,
-                    NetworkParameter.numberOfNeuronsInOutputLayer);
+            AlphaNumericFeedForwardNetwork neuronalNetwork = new AlphaNumericFeedForwardNetwork(
+                    AlphanumericNetworkParameter.numberOfInputSignals,
+                    AlphanumericNetworkParameter.numberOfNeuronsInHiddenLayer,
+                    AlphanumericNetworkParameter.numberOfNeuronsInOutputLayer
+            );
 
             DisplayMachineLearning.showWeights(neuronalNetwork.getWeightsOfHiddenLayer(), neuronalNetwork.getWeightsOfOutputLayer());
-            neuronalNetwork.testAllInputsAndShowResults();
+            neuronalNetwork.testAllInputsAndShowResults(AlphanumericTrainingParameter.inputs, AlphanumericTrainingParameter.targets);
 
             neuronalNetwork.trainWithSupervisedLearning();
 
             DisplayMachineLearning.showWeights(neuronalNetwork.getWeightsOfHiddenLayer(), neuronalNetwork.getWeightsOfOutputLayer());
-            neuronalNetwork.testAllInputsAndShowResults();
+            neuronalNetwork.testAllInputsAndShowResults(AlphanumericTrainingParameter.inputs, AlphanumericTrainingParameter.targets);
+
+            neuronalNetwork.testAllInputsAndShowResults(AlphanumericTrainingParameter.testInputs, AlphanumericTrainingParameter.testTargets);
 
             Instant finished = Instant.now();
             log.info("Algorithm execution time: {}ms", Duration.between(started, finished).toMillis());

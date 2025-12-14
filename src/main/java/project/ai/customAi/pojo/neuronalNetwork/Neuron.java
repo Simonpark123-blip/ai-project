@@ -1,10 +1,12 @@
 package project.ai.customAi.pojo.neuronalNetwork;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Random;
 
 @Data
+@Slf4j
 public class Neuron {
 
     private final int numberOfInputSignals;

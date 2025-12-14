@@ -2,7 +2,7 @@ package project.ai.customAi.pojo.neuronalNetwork;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import project.ai.customAi.pojo.LogicalAndData;
+import project.ai.customAi.pojo.data.LogicalAndData;
 import project.ai.customAi.service.perceptron.ActivationFunction;
 
 @Data
