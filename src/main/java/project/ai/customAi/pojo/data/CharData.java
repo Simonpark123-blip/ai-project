@@ -6,22 +6,58 @@ public class CharData {
             "AA",
             "BB",
             "CC",
-            "DD"
+            "DD",
+            "EE",
+            "FF",
+            "GG",
+            "HH",
+            "II",
+            "JJ",
+            "KK",
+            "LL",
+            "MM",
+            "NN",
+            "OO",
+            "PP",
+            "QQ",
+            "RR",
+            "SS",
+            "TT",
+            "UU",
+            "VV",
+            "WW",
+            "XX",
+            "YY",
+            "ZZ"
     };
 
     public static final String[] targets = {
             "BB",
             "CC",
             "DD",
-            "EE"
-    };
-
-    public static final String[] testInputs = {
-            "EE"
-    };
-
-    public static final String[] testTargets = {
-            "FF"
+            "EE",
+            "FF",
+            "GG",
+            "HH",
+            "II",
+            "JJ",
+            "KK",
+            "LL",
+            "MM",
+            "NN",
+            "OO",
+            "PP",
+            "QQ",
+            "RR",
+            "SS",
+            "TT",
+            "UU",
+            "VV",
+            "WW",
+            "XX",
+            "YY",
+            "ZZ",
+            "AA"
     };
 
 }

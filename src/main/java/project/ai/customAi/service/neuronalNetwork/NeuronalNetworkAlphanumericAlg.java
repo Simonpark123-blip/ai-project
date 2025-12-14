@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import project.ai.customAi.pojo.data.CharData;
 import project.ai.customAi.pojo.neuronalNetwork.AlphanumericNetworkParameter;
 import project.ai.customAi.pojo.neuronalNetwork.AlphanumericTrainingParameter;
 import project.ai.customAi.pojo.perceptron.TrainingParameter;
@@ -15,6 +16,7 @@ import project.ai.customAi.service.perceptron.MachineLearning;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
+import java.util.Random;
 
 @Slf4j
 @Service

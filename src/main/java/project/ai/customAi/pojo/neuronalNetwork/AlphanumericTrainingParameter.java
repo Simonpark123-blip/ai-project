@@ -7,21 +7,24 @@ import project.ai.customAi.pojo.data.CharData;
 import project.ai.customAi.service.perceptron.ActivationFunction;
 
 import java.util.Arrays;
+import java.util.Random;
 
 @Data
 @Slf4j
 @AllArgsConstructor
 public class AlphanumericTrainingParameter /* = Hyperparameter */{
 
-    public static final int numberOfEpochs = 100000;
-    public static final double learningRate = 0.001;
+    public static final int numberOfEpochs = 1000;
+    public static final double learningRate = 0.01;
     public static final ActivationFunction activationFunction = ActivationFunction.SIGMOID;
     public static final double faultTolerance = 0.1;
     public static final double[][] inputs = createOneHotVector(CharData.inputs);
     public static final double[][] targets = createOneHotVector(CharData.targets);
 
-    public static final double[][] testInputs = createOneHotVector(CharData.testInputs);
-    public static final double[][] testTargets = createOneHotVector(CharData.testTargets);
+    private static final Random rand = new Random();
+    private static final int randomTestDataIndex = rand.nextInt(CharData.targets.length);
+    public static final double[][] testInputs = createOneHotVector(pickRandom(CharData.inputs));
+    public static final double[][] testTargets = createOneHotVector(pickRandom(CharData.targets));
 
     private static double[][] createOneHotVector(String[] inputs){
         double[][] result = new double[inputs.length][]; // inputs.length == count of test-data
@@ -41,6 +44,10 @@ public class AlphanumericTrainingParameter /* = Hyperparameter */{
         log.debug(Arrays.deepToString(result));
         log.debug("Length: {}", result[0].length);
         return result;
+    }
+
+    private static String[] pickRandom(String[] data){
+        return new String[]{data[randomTestDataIndex]};
     }
 
 }
