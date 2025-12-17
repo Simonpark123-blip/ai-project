@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import project.ai.customAi.pojo.neuronalNetwork.AlphanumericNetworkParameter;
-import project.ai.customAi.pojo.neuronalNetwork.AlphanumericTrainingParameter;
+import project.ai.customAi.pojo.neuronalNetwork.NetworkParameter.AlphanumericNetworkParameter;
+import project.ai.customAi.pojo.neuronalNetwork.TrainingParameter.AlphanumericTrainingParameter;
 import project.ai.customAi.pojo.perceptron.TrainingParameter;
 import project.ai.customAi.service.AiAlgorithm;
 import project.ai.customAi.service.perceptron.ActivationFunction;
@@ -19,7 +19,7 @@ import java.util.Map;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Profile("neuronalNetworkAlphanumericUsage")
+@Profile("nnAlphanumeric")
 public class NeuronalNetworkAlphanumericAlg implements AiAlgorithm {
 
     @Override
@@ -27,7 +27,7 @@ public class NeuronalNetworkAlphanumericAlg implements AiAlgorithm {
         try {
             Instant started = Instant.now();
 
-            AlphaNumericFeedForwardNetwork neuronalNetwork = new AlphaNumericFeedForwardNetwork(
+            AlphanumericFFN neuronalNetwork = new AlphanumericFFN(
                     AlphanumericNetworkParameter.numberOfInputSignals,
                     AlphanumericNetworkParameter.numberOfNeuronsInHiddenLayer,
                     AlphanumericNetworkParameter.numberOfNeuronsInOutputLayer
@@ -45,25 +45,7 @@ public class NeuronalNetworkAlphanumericAlg implements AiAlgorithm {
 
             Instant finished = Instant.now();
             log.info("Algorithm execution time: {}ms", Duration.between(started, finished).toMillis());
-
-            /*int epochs = data != null && data.containsKey("epochs") ? Integer.parseInt(data.get("epochs")) : 100;
-            MachineLearning machineLearning = getMachineLearning(LogicalOperation.valueOf(logicalOperation), epochs);
-
-            // do algorithm
-            log.info("Weights for neuron before training: {}, bias: {}", ProcessMonitoring.lastWeights,
-                    ProcessMonitoring.lastWeights[ProcessMonitoring.lastWeights.length - 1]);
-            // forward-pass
-            machineLearning.testAllInputsAndShowResults();
-
-            // backward-pass
-            machineLearning.trainWithSupervisedLearning();
-
-            log.info("Weights for neuron after training: {}, bias: {}", ProcessMonitoring.lastWeights,
-                    ProcessMonitoring.lastWeights[ProcessMonitoring.lastWeights.length - 1]);
-            // forward-pass
-            double percentage = machineLearning.testAllInputsAndShowResults();
-
-            return Map.of("percentage", String.valueOf(percentage));*/
+            
             return null;
         } catch (Exception e) {
             log.error("Error processing CSV", e);
@@ -71,22 +53,4 @@ public class NeuronalNetworkAlphanumericAlg implements AiAlgorithm {
         }
     }
 
-    private static MachineLearning getMachineLearning(LogicalOperation logicalOperation, int epochs) {
-        double[][] inputs = new double[][]{
-                                    {0, 0},
-                                    {1, 0},
-                                    {0, 1},
-                                    {1, 1}
-                            };
-
-        double[] targets = switch (logicalOperation) {
-            case OR -> new double[]{0, 1, 1, 1};
-            case XOR -> new double[]{0, 1, 1, 0};
-            default -> new double[]{0, 0, 0, 1};
-        };
-
-        return new MachineLearning(
-                new TrainingParameter(epochs, 0.5, ActivationFunction.HEAVISIDE, inputs, targets)
-        );
-    }
 }

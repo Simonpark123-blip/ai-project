@@ -1,6 +1,9 @@
-package project.ai.customAi.pojo.neuronalNetwork;
+package project.ai.customAi.pojo.neuronalNetwork.NetworkParameter;
 
-public class NetworkParameter {
+import project.ai.customAi.pojo.BaseNetworkParameter;
+import project.ai.customAi.pojo.neuronalNetwork.TrainingParameter.TrainingParameter;
+
+public class NetworkParameter implements BaseNetworkParameter {
 
     public static final int numberOfInputSignals = TrainingParameter.inputs[0].length;
     public static final int numberOfNeuronsInHiddenLayer = TrainingParameter.inputs[0].length;

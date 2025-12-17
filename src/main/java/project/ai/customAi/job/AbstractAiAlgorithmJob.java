@@ -1,9 +1,10 @@
 package project.ai.customAi.job;
 
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.boot.CommandLineRunner;
-import project.ai.customAi.logConstants.Prefix;
-import project.ai.customAi.logConstants.PrefixConstant;
+import project.ai.customAi.logConstant.Prefix;
+import project.ai.customAi.logConstant.PrefixConstant;
 import project.ai.customAi.service.AiAlgorithm;
 import project.ai.customAi.service.straightForward.StraightForwardAlg;
 
@@ -31,10 +32,10 @@ public abstract class AbstractAiAlgorithmJob implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        MDC.put("prefix", prefixText.getLabel());
         try {
-            log.info(Prefix.clrPrefixStart + "{}" + Prefix.clrPrefixEndStartup, prefixText);
-
-            log.info("called with args {}", (Object) args);
+            log.info(Prefix.clrStartup);
+            log.info("{} {}", Prefix.clrArgs, args);
 
             String keyword = Arrays.stream(args)
                     .filter(arg -> arg.contains("keyword="))
@@ -46,11 +47,13 @@ public abstract class AbstractAiAlgorithmJob implements CommandLineRunner {
 
             Map<String, String> result = algorithm.handleAlgorithm(keyword, data);
 
-            log.info("result: {}", result);
+            log.info("{}: {}",  Prefix.clrResult, result);
+            log.info(Prefix.clrShutdown);
         } catch (Exception e) {
             log.error(e.getMessage());
             throw e;
         }
+        MDC.clear();
     }
 
     private Map<String, String> prepareData() throws Exception {

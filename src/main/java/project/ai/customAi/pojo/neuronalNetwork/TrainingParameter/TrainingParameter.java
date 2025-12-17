@@ -1,13 +1,14 @@
-package project.ai.customAi.pojo.neuronalNetwork;
+package project.ai.customAi.pojo.neuronalNetwork.TrainingParameter;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import project.ai.customAi.pojo.BaseTrainingParameter;
 import project.ai.customAi.pojo.data.LogicalAndData;
 import project.ai.customAi.service.perceptron.ActivationFunction;
 
 @Data
 @AllArgsConstructor
-public class TrainingParameter /* = Hyperparameter */{
+public class TrainingParameter implements BaseTrainingParameter /* = Hyperparameter */{
 
     public static final int numberOfEpochs = 200000;
     public static final double learningRate = 0.1;

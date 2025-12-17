@@ -1,7 +1,7 @@
 package project.ai.customAi.service.neuronalNetwork;
 
 import lombok.extern.slf4j.Slf4j;
-import project.ai.customAi.pojo.neuronalNetwork.AlphanumericNormalizedTrainingParameter;
+import project.ai.customAi.pojo.neuronalNetwork.TrainingParameter.AlphanumericNormalizedTrainingParameter;
 import project.ai.customAi.pojo.neuronalNetwork.Neuron;
 import project.ai.customAi.pojo.neuronalNetwork.ProcessMonitoring;
 
@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 @Slf4j
-public class AlphanumericNormalizedFeedForwardNetwork {
+public class AlphanumericNormalizedFFN {
 
     private final ArrayList<Neuron> hiddenLayer = new ArrayList<>();
     private final ArrayList<Neuron> outputLayer = new ArrayList<>();
@@ -20,7 +20,7 @@ public class AlphanumericNormalizedFeedForwardNetwork {
 
     private final Random rnd = new Random();
 
-    public AlphanumericNormalizedFeedForwardNetwork(int inputCount, int hiddenLayerNeurons, int outputLayerNeurons) {
+    public AlphanumericNormalizedFFN(int inputCount, int hiddenLayerNeurons, int outputLayerNeurons) {
         buildLayer(inputCount, hiddenLayerNeurons, hiddenLayer);
         buildLayer(hiddenLayerNeurons, outputLayerNeurons, outputLayer);
 
@@ -169,7 +169,7 @@ public class AlphanumericNormalizedFeedForwardNetwork {
             totalErrorAtAll += calculateTotalError(targets[i]);
 
             log.info("Expected input '{}' (length {}) to result in '{}' and was '{}'", Arrays.toString(inputs[i]), inputs[i].length, Arrays.toString(targets[i]), Arrays.toString(lastOutputs));
-            log.info("Expected input '{}' result in '{}' and was '{}'", convertBinaryToChar(inputs[i]), convertBinaryToChar(targets[i]), convertBinaryToChar(lastOutputs));
+            log.info("Expected input '{}' to result in '{}' and was '{}'", convertBinaryToChar(inputs[i]), convertBinaryToChar(targets[i]), convertBinaryToChar(lastOutputs));
 
             boolean areAllOutputsOK = true;
             for (int j = 0; j < targets[i].length; j++) {
