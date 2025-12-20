@@ -4,15 +4,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import project.ai.customAi.logConstant.PrefixConstant;
-import project.ai.customAi.service.NN.NNBinaryAlg;
+import project.ai.customAi.service.NN.NNFullwordAlg;
 
 @Slf4j
 @Service
-@Profile("nnBinary")
-public class NNBinaryJob extends AbstractAiAlgorithmJob {
+@Profile("nnFullword")
+public class NNFullwordJob extends AbstractAiAlgorithmJob {
 
-    public NNBinaryJob(NNBinaryAlg alg) {
-        super(alg, PrefixConstant.NN_BINARY_ALGORITHM);
+    public NNFullwordJob(NNFullwordAlg alg) {
+        super(alg, PrefixConstant.NN_FULLWORD_ALGORITHM);
     }
 
 }

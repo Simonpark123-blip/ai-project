@@ -1,4 +1,4 @@
-package project.ai.customAi.pojo.neuronalNetwork.NetworkParameter;
+package project.ai.customAi.pojo.NN.NetworkParameter;
 
 import project.ai.customAi.pojo.BaseNetworkParameter;
 import project.ai.customAi.pojo.data.CharData;

@@ -1,9 +1,9 @@
-package project.ai.customAi.service.neuronalNetwork;
+package project.ai.customAi.service.NN;
 
 import lombok.extern.slf4j.Slf4j;
-import project.ai.customAi.pojo.neuronalNetwork.ProcessMonitoring;
-import project.ai.customAi.pojo.neuronalNetwork.TrainingParameter.TrainingParameter;
-import project.ai.customAi.pojo.neuronalNetwork.Neuron;
+import project.ai.customAi.pojo.NN.ProcessMonitoring;
+import project.ai.customAi.pojo.NN.TrainingParameter.TrainingParameter;
+import project.ai.customAi.pojo.NN.Neuron;
 
 import java.util.ArrayList;
 import java.util.Collections;

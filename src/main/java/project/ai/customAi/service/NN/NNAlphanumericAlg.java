@@ -1,16 +1,12 @@
-package project.ai.customAi.service.neuronalNetwork;
+package project.ai.customAi.service.NN;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import project.ai.customAi.pojo.neuronalNetwork.NetworkParameter.AlphanumericNetworkParameter;
-import project.ai.customAi.pojo.neuronalNetwork.TrainingParameter.AlphanumericTrainingParameter;
-import project.ai.customAi.pojo.perceptron.TrainingParameter;
+import project.ai.customAi.pojo.NN.NetworkParameter.AlphanumericNetworkParameter;
+import project.ai.customAi.pojo.NN.TrainingParameter.AlphanumericTrainingParameter;
 import project.ai.customAi.service.AiAlgorithm;
-import project.ai.customAi.service.perceptron.ActivationFunction;
-import project.ai.customAi.service.perceptron.LogicalOperation;
-import project.ai.customAi.service.perceptron.MachineLearning;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -20,7 +16,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Profile("nnAlphanumeric")
-public class NeuronalNetworkAlphanumericAlg implements AiAlgorithm {
+public class NNAlphanumericAlg implements AiAlgorithm {
 
     @Override
     public Map<String, String> handleAlgorithm(String logicalOperation, Map<String, String> data) {

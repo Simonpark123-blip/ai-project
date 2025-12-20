@@ -1,4 +1,4 @@
-package project.ai.customAi.pojo.neuronalNetwork.TrainingParameter;
+package project.ai.customAi.pojo.NN.TrainingParameter;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

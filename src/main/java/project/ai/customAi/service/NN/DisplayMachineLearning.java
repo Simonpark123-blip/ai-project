@@ -1,4 +1,4 @@
-package project.ai.customAi.service.neuronalNetwork;
+package project.ai.customAi.service.NN;
 
 import lombok.extern.slf4j.Slf4j;
 

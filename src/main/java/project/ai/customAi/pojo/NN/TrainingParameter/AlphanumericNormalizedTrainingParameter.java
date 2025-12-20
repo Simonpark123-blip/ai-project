@@ -1,4 +1,4 @@
-package project.ai.customAi.pojo.neuronalNetwork.TrainingParameter;
+package project.ai.customAi.pojo.NN.TrainingParameter;
 
 import lombok.extern.slf4j.Slf4j;
 import project.ai.customAi.pojo.BaseTrainingParameter;
@@ -6,13 +6,9 @@ import project.ai.customAi.pojo.data.CharData;
 import project.ai.customAi.service.perceptron.ActivationFunction;
 
 import java.util.Arrays;
-import java.util.Random;
 
 @Slf4j
 public class AlphanumericNormalizedTrainingParameter implements BaseTrainingParameter {
-
-    public static final long RANDOM_SEED = 42L;
-    public static final Random rand = new Random(RANDOM_SEED);
 
     public static final int numberOfEpochs = 30000;
     public static final double learningRate = 0.1;
@@ -38,7 +34,6 @@ public class AlphanumericNormalizedTrainingParameter implements BaseTrainingPara
         log.info("Normalized array: {}", Arrays.deepToString(normalizedData));
         return normalizedData;
     }
-
 
     private static int getAsciiRepresentation(char c){
         return c - 'A';

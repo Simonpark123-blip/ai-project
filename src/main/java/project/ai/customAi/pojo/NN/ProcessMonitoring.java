@@ -1,4 +1,4 @@
-package project.ai.customAi.pojo.neuronalNetwork;
+package project.ai.customAi.pojo.NN;
 
 public class ProcessMonitoring {
 

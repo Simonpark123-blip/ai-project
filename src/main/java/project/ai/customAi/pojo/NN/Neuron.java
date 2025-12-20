@@ -1,4 +1,4 @@
-package project.ai.customAi.pojo.neuronalNetwork;
+package project.ai.customAi.pojo.NN;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;

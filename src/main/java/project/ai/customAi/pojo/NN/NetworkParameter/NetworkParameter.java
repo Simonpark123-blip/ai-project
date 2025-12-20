@@ -1,7 +1,7 @@
-package project.ai.customAi.pojo.neuronalNetwork.NetworkParameter;
+package project.ai.customAi.pojo.NN.NetworkParameter;
 
 import project.ai.customAi.pojo.BaseNetworkParameter;
-import project.ai.customAi.pojo.neuronalNetwork.TrainingParameter.TrainingParameter;
+import project.ai.customAi.pojo.NN.TrainingParameter.TrainingParameter;
 
 public class NetworkParameter implements BaseNetworkParameter {
 
