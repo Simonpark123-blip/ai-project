@@ -93,7 +93,7 @@ public class FullwordFFN {
             }
 
             // logging (current epoch)
-            if (epoch % 10000 == 0 || epoch == FullwordTrainingParameter.numberOfEpochs) {
+            if (epoch % 1000 == 0 || epoch == FullwordTrainingParameter.numberOfEpochs) {
                 double totalErr = 0.0;
                 for (int i = 0; i < trainingCaseCount; i++) {
                     calculateOutput(FullwordTrainingParameter.inputs[i]);

@@ -14,11 +14,11 @@ public class FullwordTrainingParameter implements BaseTrainingParameter {
 
     private static final char[] VOWELS = {'a','e','i','o','u'};
 
-    public static final int numberOfEpochs = 10_000;
-    public static final double learningRate = 0.1;
+    public static final int numberOfEpochs = 200_000;
+    public static final double learningRate = 0.003;
     public static final ActivationFunction activationFunction = ActivationFunction.TANH;
     public static final double faultTolerance = 0.04;
-    public static final int numberOfGeneratedWords = 9; // one element is original
+    public static final int numberOfGeneratedWords = 25; // + one element (original)
     public static final int numberOfTotalWords = (numberOfGeneratedWords + 1) * Wordset.input.length;
 
     public static final double[][] inputs = createNormalizedData(generateInputs());
