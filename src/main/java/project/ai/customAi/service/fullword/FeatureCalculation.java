@@ -20,8 +20,8 @@ public class FeatureCalculation {
         return (double) levenshtein.apply(a, b) / maxLen;
     }
 
-    public int isDistanceLE(String a, String b, int threshold) {
-        return levenshtein.apply(a, b) <= threshold ? 1 : 0;
+    public boolean isDistanceLE(String a, String b, int threshold) {
+        return levenshtein.apply(a, b) <= threshold;
     }
 
     public double lengthDiffNorm(String a, String b) {
@@ -107,8 +107,8 @@ public class FeatureCalculation {
     public double[] extractFeatures(String input, String candidate) {
         return new double[] {
                 levenshteinNorm(input, candidate),
-                isDistanceLE(input, candidate, 1),
-                isDistanceLE(input, candidate, 2),
+                isDistanceLE(input, candidate, 1) ? 1: 0,
+                isDistanceLE(input, candidate, 2) ? 1: 0,
                 lengthDiffNorm(input, candidate),
                 prefixMatchNorm(input, candidate),
                 suffixMatchNorm(input, candidate),

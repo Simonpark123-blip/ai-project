@@ -16,7 +16,7 @@ public class FullwordPreperator {
                                  .replace("ü", "ue")
                                  .replace("ß", "ss");
         cleanedWord = cleanedWord.replaceAll("[^a-z_]", "");
-        log.info("Cleaned word '{}' for '{}'", cleanedWord, uncleanedWord);
+        log.debug("Cleaned word '{}' for '{}'", cleanedWord, uncleanedWord);
         return cleanedWord;
     }
 

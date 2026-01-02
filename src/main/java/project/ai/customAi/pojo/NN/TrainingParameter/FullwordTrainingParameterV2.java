@@ -5,15 +5,16 @@ import lombok.extern.slf4j.Slf4j;
 import project.ai.customAi.pojo.BaseTrainingParameter;
 import project.ai.customAi.service.perceptron.ActivationFunction;
 
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
 @Slf4j
 public class FullwordTrainingParameterV2 implements BaseTrainingParameter {
 
-    public static final int numberOfEpochs = 20000;
-    public static final double learningRate = 0.01;
+    public static final int numberOfEpochs = 500000;
+    public static final double learningRate = 0.001;
     public static final ActivationFunction activationFunction = ActivationFunction.SIGMOID;
-    public static final double faultTolerance = 0.5;
+    public static final double faultTolerance = 0.1;
 
     @AllArgsConstructor
     static class TrainingSet {
@@ -38,6 +39,23 @@ public class FullwordTrainingParameterV2 implements BaseTrainingParameter {
             "Mail",
             "Wind"
     );
+
+    public static List<String> fullDictionary = retrieveDictionaryData();
+
+    static List<String> retrieveDictionaryData() {
+        List<String> dictionaryData = new ArrayList<>();
+        try(BufferedReader br = new BufferedReader(new FileReader(Objects.requireNonNull(FullwordTrainingParameterV2.class.getClassLoader().getResource("data/index.dic")).getPath()))) {
+            String line = br.readLine();
+
+            while (line != null) {
+                dictionaryData.add(line.split("/")[0]);
+                line = br.readLine();
+            }
+            return dictionaryData;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static List<List<String>> testInput = List.of(
             List.of("Bamm", "Baum"),     // Doppelbuchstabe

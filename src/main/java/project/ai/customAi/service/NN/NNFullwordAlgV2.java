@@ -1,5 +1,7 @@
 package project.ai.customAi.service.NN;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -8,12 +10,13 @@ import project.ai.customAi.pojo.NN.NetworkParameter.FullwordNetworkParameterV2;
 import project.ai.customAi.pojo.NN.TrainingParameter.FullwordTrainingParameterV2;
 import project.ai.customAi.service.AiAlgorithm;
 import project.ai.customAi.service.fullword.FeatureCalculation;
+import project.ai.customAi.service.fullword.FullwordPreperator;
 
+import java.awt.event.ComponentAdapter;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -61,15 +64,15 @@ public class NNFullwordAlgV2 implements AiAlgorithm {
             int total = FullwordTrainingParameterV2.testInput.size();
 
             for (int i = 0; i < total; i++) {
-                String inputWord = FullwordTrainingParameterV2.testInput.get(i).get(0);
-                String expectedTarget = FullwordTrainingParameterV2.testInput.get(i).get(1);
+                String inputWord = FullwordPreperator.cleanWord(FullwordTrainingParameterV2.testInput.get(i).get(0));
+                String expectedTarget = FullwordPreperator.cleanWord(FullwordTrainingParameterV2.testInput.get(i).get(1));
 
                 double bestScore = Double.NEGATIVE_INFINITY;
                 String bestCandidate = null;
 
                 for (String dictCandidate : FullwordTrainingParameterV2.dictionary) {
                     // normalize
-                    String candNorm = dictCandidate.toLowerCase(Locale.ROOT);
+                    String candNorm = FullwordPreperator.cleanWord(dictCandidate);
                     double[] features = featureCalculation.extractFeatures(inputWord.toLowerCase(Locale.ROOT), candNorm);
 
                     // forward + read score
@@ -96,6 +99,51 @@ public class NNFullwordAlgV2 implements AiAlgorithm {
             result.put("accuracy", String.valueOf(accuracy));
             result.put("correct", String.valueOf(correct));
             result.put("total", String.valueOf(total));
+
+            String inputWord = FullwordPreperator.cleanWord("gehe");
+            double bestScore = Double.NEGATIVE_INFINITY;
+
+            /*Map<Integer, List<String>> dictOrderedByLength = FullwordTrainingParameterV2.fullDictionary.stream().collect(Collectors.groupingBy(String::length));
+            List<String> candidates = dictOrderedByLength
+                    .getOrDefault(inputWord.length(), List.of())
+                    .stream()
+                    .filter(w -> featureCalculation.isDistanceLE(inputWord, w, 2))
+                    .limit(200)
+                    .toList();*/
+            List<String> candidates = FullwordTrainingParameterV2.fullDictionary
+                    .stream()
+                    .filter(w -> featureCalculation.isDistanceLE(inputWord, w, 2))
+                    .limit(200)
+                    .toList();
+
+            @Data
+            @AllArgsConstructor
+            class Candidate {
+                private String value;
+                private double score;
+            }
+
+            List<Candidate> bestCandidates = new ArrayList<>();
+            for (String candidate : candidates) {
+                // normalize
+                String candNorm = FullwordPreperator.cleanWord(candidate);
+                double[] features = featureCalculation.extractFeatures(inputWord.toLowerCase(Locale.ROOT), candNorm);
+
+                // forward + read score
+                double score = neuronalNetwork.predictScore(features);
+                Candidate c = new Candidate(candidate, score);
+                log.debug("{}", score);
+                if (score > bestScore) {
+                    bestScore = score;
+                }
+                bestCandidates.add(c);
+            }
+
+            bestCandidates.sort(Comparator.comparing(Candidate::getScore).reversed());
+            log.info("Best candidate is: {}", bestCandidates.getFirst().getValue());
+            log.info("Best score is: {}", bestScore);
+            log.info("All {} good candidates (best -> worst): {}", bestCandidates.size(), bestCandidates.toArray());
+
             return result;
         } catch (Exception e) {
             log.error("Error processing NNFullwordAlgV2", e);
