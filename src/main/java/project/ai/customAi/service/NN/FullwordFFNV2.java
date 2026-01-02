@@ -1,6 +1,7 @@
 package project.ai.customAi.service.NN;
 
 import lombok.extern.slf4j.Slf4j;
+import project.ai.customAi.pojo.NN.NetworkParameter.FullwordNetworkParameterV2;
 import project.ai.customAi.pojo.NN.Neuron;
 import project.ai.customAi.pojo.NN.ProcessMonitoring;
 import project.ai.customAi.pojo.NN.TrainingParameter.FullwordTrainingParameter;
@@ -18,6 +19,7 @@ public class FullwordFFNV2 {
     // caches (last forward pass)
     private final double[] lastHiddenOutputs;
     private final double[] lastOutputs;
+    private final double[] scores;
 
     private final Random rnd = new Random();
 
@@ -27,6 +29,7 @@ public class FullwordFFNV2 {
 
         lastHiddenOutputs = new double[hiddenLayerNeurons];
         lastOutputs = new double[outputLayerNeurons];
+        scores = new double[FullwordTrainingParameterV2.input.size()];
 
         ProcessMonitoring.lastOutputs = lastOutputs;
         ProcessMonitoring.lastOutputsFromHiddenLayer = lastHiddenOutputs;
@@ -173,6 +176,7 @@ public class FullwordFFNV2 {
 
             boolean areAllOutputsOK = true;
             for (int j = 0; j < targets[i].length; j++) {
+                scores[i] = lastOutputs[j];
                 if (Math.abs(lastOutputs[j] - targets[i][j]) > FullwordTrainingParameterV2.faultTolerance) {
                     areAllOutputsOK = false;
                     break;
@@ -185,6 +189,12 @@ public class FullwordFFNV2 {
         totalErrorAtAll /= inputs.length;
         log.info("Average of total error at all outputs: {}", totalErrorAtAll);
         log.info("Learned percent at all outputs: {}", learnedInPercent);
+    }
+
+    public double predictScore(double[] input) {
+        calculateOutput(input);
+        if (lastOutputs.length == 0) return 0.0;
+        return lastOutputs[0];
     }
 
     private double applyActivation(double value) {
