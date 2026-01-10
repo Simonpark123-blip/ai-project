@@ -12,11 +12,9 @@ import project.ai.customAi.service.AiAlgorithm;
 import project.ai.customAi.service.fullword.FeatureCalculation;
 import project.ai.customAi.service.fullword.FullwordPreperator;
 
-import java.awt.event.ComponentAdapter;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -83,7 +81,8 @@ public class NNFullwordAlgV2 implements AiAlgorithm {
                     }
                 }
 
-                boolean match = expectedTarget.equalsIgnoreCase(bestCandidate);
+                assert bestCandidate != null;
+                boolean match = expectedTarget.equals(FullwordPreperator.cleanWord(bestCandidate));
                 if (match) correct++;
 
                 log.info("Input='{}' expected='{}' => predicted='{}' (score={}) match={}", inputWord, expectedTarget, bestCandidate, bestScore, match);
@@ -100,16 +99,10 @@ public class NNFullwordAlgV2 implements AiAlgorithm {
             result.put("correct", String.valueOf(correct));
             result.put("total", String.valueOf(total));
 
-            String inputWord = FullwordPreperator.cleanWord("gehe");
+            String inputWord = FullwordPreperator.cleanWord("Abbel");//gehen, testn, opfel,
             double bestScore = Double.NEGATIVE_INFINITY;
 
-            /*Map<Integer, List<String>> dictOrderedByLength = FullwordTrainingParameterV2.fullDictionary.stream().collect(Collectors.groupingBy(String::length));
-            List<String> candidates = dictOrderedByLength
-                    .getOrDefault(inputWord.length(), List.of())
-                    .stream()
-                    .filter(w -> featureCalculation.isDistanceLE(inputWord, w, 2))
-                    .limit(200)
-                    .toList();*/
+            // prefilter using levenshtein-distance
             List<String> candidates = FullwordTrainingParameterV2.fullDictionary
                     .stream()
                     .filter(w -> featureCalculation.isDistanceLE(inputWord, w, 2))

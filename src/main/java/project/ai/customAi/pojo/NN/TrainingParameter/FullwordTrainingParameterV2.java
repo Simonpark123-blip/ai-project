@@ -130,6 +130,16 @@ public class FullwordTrainingParameterV2 implements BaseTrainingParameter {
     static TrainingSet ts25 = new TrainingSet("",     "Java", 0.0);
     static TrainingSet ts26 = new TrainingSet("XYZ",  "Java", 0.0);
 
+    /*static TrainingSet ts27 = new TrainingSet("Lives",  "Life", 0.75);
+    static TrainingSet ts28 = new TrainingSet("Bäume",  "Baum", 0.8);
+    static TrainingSet ts29 = new TrainingSet("Reife",  "Reif", 0.9);*/
+
+    static TrainingSet ts30 = new TrainingSet("Lifeline",  "Life", 0.0);
+    static TrainingSet ts31 = new TrainingSet("Baumkrone",  "Baum", 0.0);
+    static TrainingSet ts32 = new TrainingSet("Reifegrad",  "Reif", 0.0);
+    static TrainingSet ts33 = new TrainingSet("Räumen",  "Baum", 0.0);
+    static TrainingSet ts34 = new TrainingSet("reifend",  "Reif", 0.0);
+
     public static List<List<String>> input = List.of(
             List.of(ts1.input, ts1.dictionary),
             List.of(ts2.input, ts2.dictionary),
@@ -161,7 +171,17 @@ public class FullwordTrainingParameterV2 implements BaseTrainingParameter {
             List.of(ts24.input, ts24.dictionary),
 
             List.of(ts25.input, ts25.dictionary),
-            List.of(ts26.input, ts26.dictionary)
+            List.of(ts26.input, ts26.dictionary),/*
+
+            List.of(ts27.input, ts25.dictionary),
+            List.of(ts28.input, ts26.dictionary),
+            List.of(ts29.input, ts25.dictionary),*/
+
+            List.of(ts30.input, ts25.dictionary),
+            List.of(ts31.input, ts26.dictionary),
+            List.of(ts32.input, ts25.dictionary),
+            List.of(ts33.input, ts26.dictionary),
+            List.of(ts34.input, ts25.dictionary)
     );
 
     public static double[][] targets = {
@@ -171,6 +191,8 @@ public class FullwordTrainingParameterV2 implements BaseTrainingParameter {
             {ts14.label}, {ts15.label}, {ts16.label}, {ts17.label}, {ts18.label},
             {ts19.label}, {ts20.label}, {ts21.label},
             {ts22.label}, {ts23.label}, {ts24.label},
-            {ts25.label}, {ts26.label}
+            {ts25.label}, {ts26.label},
+            /*{ts27.label}, {ts28.label}, {ts29.label},*/
+            {ts30.label}, {ts31.label}, {ts32.label}, {ts33.label}, {ts34.label}
     };
 }

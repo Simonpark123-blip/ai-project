@@ -27,7 +27,9 @@ public class FeatureCalculation {
     public double lengthDiffNorm(String a, String b) {
         int maxLen = Math.max(a.length(), b.length());
         if (maxLen == 0) return 0.0;
-        return (double) Math.abs(a.length() - b.length()) / maxLen;
+        int diff = Math.abs(a.length() - b.length());
+        // increased value for diff > 1
+        return diff <= 1 ? (double) diff / maxLen : diff;
     }
 
     public double prefixMatchNorm(String a, String b) {
@@ -106,15 +108,16 @@ public class FeatureCalculation {
 
     public double[] extractFeatures(String input, String candidate) {
         return new double[] {
-                levenshteinNorm(input, candidate),
-                isDistanceLE(input, candidate, 1) ? 1: 0,
-                isDistanceLE(input, candidate, 2) ? 1: 0,
-                lengthDiffNorm(input, candidate),
-                prefixMatchNorm(input, candidate),
-                suffixMatchNorm(input, candidate),
-                charOverlapNorm(input, candidate),
-                ngramOverlapNorm(input, candidate, 2),
-                vowelPatternMatch(input, candidate)
+                Math.pow(levenshteinNorm(input, candidate), 2),
+                Math.pow(isDistanceLE(input, candidate, 1) ? 1: 0, 5),
+                Math.pow(isDistanceLE(input, candidate, 2) ? 1: 0, 3),
+                Math.pow(lengthDiffNorm(input, candidate), 2),
+                Math.pow(prefixMatchNorm(input, candidate), 5),
+                Math.pow(suffixMatchNorm(input, candidate), 5),
+                Math.pow(charOverlapNorm(input, candidate), 0.5),
+                Math.pow(ngramOverlapNorm(input, candidate, 2), 3),
+                Math.pow(ngramOverlapNorm(input, candidate, 3), 10),
+                Math.pow(vowelPatternMatch(input, candidate), 0.75)
         };
     }
 }
