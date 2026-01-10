@@ -7,38 +7,15 @@ import project.ai.customAi.service.perceptron.ActivationFunction;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class FullwordTrainingParameterV2 implements BaseTrainingParameter {
 
-    public static final int numberOfEpochs = 500000;
-    public static final double learningRate = 0.001;
+    public static final int numberOfEpochs = 500_000;
+    public static final double learningRate = 0.01;
     public static final ActivationFunction activationFunction = ActivationFunction.SIGMOID;
     public static final double faultTolerance = 0.1;
-
-    @AllArgsConstructor
-    static class TrainingSet {
-        String input;
-        String dictionary;
-        double label;
-    }
-
-    public static List<String> dictionary = List.of(
-            "Baum",
-            "Paul",
-            "Java",
-            "Love",
-            "Laub",
-            "Test",
-            "Life",
-            "Reif",
-            "Haus",
-            "Auto",
-            "Code",
-            "Boot",
-            "Mail",
-            "Wind"
-    );
 
     public static List<String> fullDictionary = retrieveDictionaryData();
 
@@ -84,7 +61,7 @@ public class FullwordTrainingParameterV2 implements BaseTrainingParameter {
             List.of("Oto",  "Auto"),     // Auslassung
 
             List.of("Cdoe", "Code"),     // Swap
-            List.of("Kood", "Code"),     // phonetisch
+            List.of("Kood", "Boot"),     // phonetisch
 
             List.of("Bott", "Boot"),     // Doppelkonsonant
             List.of("Bot",  "Boot"),     // fehlender Buchstabe
@@ -96,103 +73,249 @@ public class FullwordTrainingParameterV2 implements BaseTrainingParameter {
             List.of("Wynd", "Wind")      // starker Vokalwechsel
     );
 
-    static TrainingSet ts1  = new TrainingSet("Paul", "Paul", 1.0);
-    static TrainingSet ts2  = new TrainingSet("Pall", "Paul", 0.9);
-    static TrainingSet ts3  = new TrainingSet("Paol", "Paul", 0.8);
-    static TrainingSet ts4  = new TrainingSet("Pol",  "Paul", 0.75);
-    static TrainingSet ts5  = new TrainingSet("Baul", "Paul", 0.2);
+    @AllArgsConstructor
+    static class TrainingSet {
+        String input;
+        String dictionary;
+        double label;
+    }
 
-    static TrainingSet ts6  = new TrainingSet("Java",  "Java", 1.0);
-    static TrainingSet ts7  = new TrainingSet("jawa",  "Java", 0.9);
-    static TrainingSet ts8  = new TrainingSet("Jvaa",  "Java", 0.85);
-    static TrainingSet ts9  = new TrainingSet("javva", "Java", 0.8);
-    static TrainingSet ts10 = new TrainingSet("jav",   "Java", 0.75);
-
-    static TrainingSet ts11 = new TrainingSet("Lava",  "Java", 0.2);
-    static TrainingSet ts12 = new TrainingSet("Jura",  "Java", 0.2);
-    static TrainingSet ts13 = new TrainingSet("Reif",  "Java", 0.0);
-
-    static TrainingSet ts14 = new TrainingSet("Love", "Love", 1.0);
-    static TrainingSet ts15 = new TrainingSet("Lvoe", "Love", 0.85);
-    static TrainingSet ts16 = new TrainingSet("Lov",  "Love", 0.75);
-
-    static TrainingSet ts17 = new TrainingSet("Life", "Love", 0.2);
-    static TrainingSet ts18 = new TrainingSet("Reif", "Love", 0.0);
-
-    static TrainingSet ts19 = new TrainingSet("Baum", "Baum", 1.0);
-    static TrainingSet ts20 = new TrainingSet("Bam",  "Baum", 0.8);
-    static TrainingSet ts21 = new TrainingSet("Laub", "Baum", 0.1);
-
-    static TrainingSet ts22 = new TrainingSet("Test", "Test", 1.0);
-    static TrainingSet ts23 = new TrainingSet("Tset", "Test", 0.85);
-    static TrainingSet ts24 = new TrainingSet("Tes",  "Test", 0.7);
-
-    static TrainingSet ts25 = new TrainingSet("",     "Java", 0.0);
-    static TrainingSet ts26 = new TrainingSet("XYZ",  "Java", 0.0);
-
-    /*static TrainingSet ts27 = new TrainingSet("Lives",  "Life", 0.75);
-    static TrainingSet ts28 = new TrainingSet("Bäume",  "Baum", 0.8);
-    static TrainingSet ts29 = new TrainingSet("Reife",  "Reif", 0.9);*/
-
-    static TrainingSet ts30 = new TrainingSet("Lifeline",  "Life", 0.0);
-    static TrainingSet ts31 = new TrainingSet("Baumkrone",  "Baum", 0.0);
-    static TrainingSet ts32 = new TrainingSet("Reifegrad",  "Reif", 0.0);
-    static TrainingSet ts33 = new TrainingSet("Räumen",  "Baum", 0.0);
-    static TrainingSet ts34 = new TrainingSet("reifend",  "Reif", 0.0);
-
-    public static List<List<String>> input = List.of(
-            List.of(ts1.input, ts1.dictionary),
-            List.of(ts2.input, ts2.dictionary),
-            List.of(ts3.input, ts3.dictionary),
-            List.of(ts4.input, ts4.dictionary),
-            List.of(ts5.input, ts5.dictionary),
-
-            List.of(ts6.input, ts6.dictionary),
-            List.of(ts7.input, ts7.dictionary),
-            List.of(ts8.input, ts8.dictionary),
-            List.of(ts9.input, ts9.dictionary),
-            List.of(ts10.input, ts10.dictionary),
-            List.of(ts11.input, ts11.dictionary),
-            List.of(ts12.input, ts12.dictionary),
-            List.of(ts13.input, ts13.dictionary),
-
-            List.of(ts14.input, ts14.dictionary),
-            List.of(ts15.input, ts15.dictionary),
-            List.of(ts16.input, ts16.dictionary),
-            List.of(ts17.input, ts17.dictionary),
-            List.of(ts18.input, ts18.dictionary),
-
-            List.of(ts19.input, ts19.dictionary),
-            List.of(ts20.input, ts20.dictionary),
-            List.of(ts21.input, ts21.dictionary),
-
-            List.of(ts22.input, ts22.dictionary),
-            List.of(ts23.input, ts23.dictionary),
-            List.of(ts24.input, ts24.dictionary),
-
-            List.of(ts25.input, ts25.dictionary),
-            List.of(ts26.input, ts26.dictionary),/*
-
-            List.of(ts27.input, ts25.dictionary),
-            List.of(ts28.input, ts26.dictionary),
-            List.of(ts29.input, ts25.dictionary),*/
-
-            List.of(ts30.input, ts25.dictionary),
-            List.of(ts31.input, ts26.dictionary),
-            List.of(ts32.input, ts25.dictionary),
-            List.of(ts33.input, ts26.dictionary),
-            List.of(ts34.input, ts25.dictionary)
+    public static List<String> dictionary = List.of(
+            "Baum","Paul","Java","Love","Life","Test","Mail","Boot","Wind","Haus","Auto","Code",
+            "Baumhaus","Autobahn","Mailserver","Bootshaus","Hausverwaltung","Reifendruck",
+            "Quellcode","Softwareentwicklung","Programmiersprache","Rechtschreibkorrektur",
+            "Datenverarbeitung","Informationsverarbeitung","Benutzeroberfläche","Fehlerbehandlung",
+            "Datenbankverbindung","Systemkonfiguration","Anwendungsentwicklung","Testframework",
+            "Entwicklungsumgebung","Autoversicherung","Baumkrone","Baumstamm","Baumaterial"
     );
 
-    public static double[][] targets = {
-            {ts1.label}, {ts2.label}, {ts3.label}, {ts4.label}, {ts5.label},
-            {ts6.label}, {ts7.label}, {ts8.label}, {ts9.label}, {ts10.label},
-            {ts11.label}, {ts12.label}, {ts13.label},
-            {ts14.label}, {ts15.label}, {ts16.label}, {ts17.label}, {ts18.label},
-            {ts19.label}, {ts20.label}, {ts21.label},
-            {ts22.label}, {ts23.label}, {ts24.label},
-            {ts25.label}, {ts26.label},
-            /*{ts27.label}, {ts28.label}, {ts29.label},*/
-            {ts30.label}, {ts31.label}, {ts32.label}, {ts33.label}, {ts34.label}
-    };
+    static List<TrainingSet> trainingSets = List.of(
+            new TrainingSet("Baum","Baum",1.0),
+            new TrainingSet("Paul","Paul",1.0),
+            new TrainingSet("Java","Java",1.0),
+            new TrainingSet("Love","Love",1.0),
+            new TrainingSet("Life","Life",1.0),
+            new TrainingSet("Test","Test",1.0),
+            new TrainingSet("Mail","Mail",1.0),
+            new TrainingSet("Boot","Boot",1.0),
+            new TrainingSet("Wind","Wind",1.0),
+            new TrainingSet("Haus","Haus",1.0),
+            new TrainingSet("Auto","Auto",1.0),
+            new TrainingSet("Code","Code",1.0),
+            new TrainingSet("Baumhaus","Baumhaus",1.0),
+            new TrainingSet("Quellcode","Quellcode",1.0),
+            new TrainingSet("Softwareentwicklung","Softwareentwicklung",1.0),
+            new TrainingSet("Programmiersprache","Programmiersprache",1.0),
+            new TrainingSet("Rechtschreibkorrektur","Rechtschreibkorrektur",1.0),
+            new TrainingSet("Datenverarbeitung","Datenverarbeitung",1.0),
+            new TrainingSet("Testframework","Testframework",1.0),
+            new TrainingSet("Benutzeroberfläche","Benutzeroberfläche",1.0),
+
+            new TrainingSet("Bamm","Baum",0.9),
+            new TrainingSet("Boum","Baum",0.85),
+            new TrainingSet("Bam","Baum",0.8),
+            new TrainingSet("Pall","Paul",0.9),
+            new TrainingSet("Pual","Paul",0.85),
+            new TrainingSet("Paol","Paul",0.8),
+            new TrainingSet("Pol","Paul",0.7),
+            new TrainingSet("jawa","Java",0.9),
+            new TrainingSet("Jvaa","Java",0.85),
+            new TrainingSet("javva","Java",0.8),
+            new TrainingSet("jav","Java",0.75),
+            new TrainingSet("Jav","Java",0.75),
+            new TrainingSet("Lvoe","Love",0.85),
+            new TrainingSet("Lov","Love",0.75),
+            new TrainingSet("Lyfe","Life",0.7),
+            new TrainingSet("Lief","Life",0.8),
+            new TrainingSet("Tset","Test",0.85),
+            new TrainingSet("Tes","Test",0.7),
+            new TrainingSet("Cdoe","Code",0.85),
+            new TrainingSet("Cod","Code",0.7),
+            new TrainingSet("Mial","Mail",0.85),
+            new TrainingSet("Meil","Mail",0.8),
+            new TrainingSet("Mai","Mail",0.75),
+            new TrainingSet("Btoot","Boot",0.75),
+            new TrainingSet("Bot","Boot",0.7),
+            new TrainingSet("Bott","Boot",0.8),
+            new TrainingSet("Aotu","Auto",0.85),
+            new TrainingSet("Aut","Auto",0.7),
+            new TrainingSet("Gava","Java",0.6),
+            new TrainingSet("Jafa","Java",0.7),
+            new TrainingSet("Jana","Java",0.6),
+            new TrainingSet("Jave","Java",0.65),
+            new TrainingSet("Javo","Java",0.6),
+            new TrainingSet("Lafe","Life",0.5),
+            new TrainingSet("Luve","Love",0.75),
+            new TrainingSet("Wint","Wind",0.7),
+            new TrainingSet("Wynd","Wind",0.6),
+
+            new TrainingSet("Jiva","Java",0.45),
+            new TrainingSet("Jove","Java",0.4),
+            new TrainingSet("JawaScript","Java",0.2),
+            new TrainingSet("Javscript","Java",0.35),
+            new TrainingSet("JavaScript","Java",0.0),
+            new TrainingSet("JavaFX","Java",0.2),
+            new TrainingSet("JavaBeans","Java",0.0),
+            new TrainingSet("Lover","Love",0.2),
+            new TrainingSet("Loving","Love",0.2),
+            new TrainingSet("Liefes","Life",0.3),
+            new TrainingSet("Lifely","Life",0.3),
+            new TrainingSet("Tests","Test",0.4),
+            new TrainingSet("Testlauf","Test",0.0),
+            new TrainingSet("Testframework","Test",0.0),
+            new TrainingSet("Mailbox","Mail",0.0),
+            new TrainingSet("Mailserver","Mail",0.0),
+            new TrainingSet("Bootshaus","Boot",0.0),
+            new TrainingSet("Booting","Boot",0.2),
+            new TrainingSet("Windkraft","Wind",0.0),
+            new TrainingSet("Windig","Wind",0.1),
+            new TrainingSet("Hausverwaltung","Haus",0.0),
+            new TrainingSet("Hauswand","Haus",0.0),
+            new TrainingSet("Autobahn","Auto",0.0),
+            new TrainingSet("Autohaus","Auto",0.0),
+            new TrainingSet("Reifendruck","Reif",0.0),
+            new TrainingSet("Reifend","Reif",0.2),
+            new TrainingSet("Reife","Reif",0.6),
+
+            new TrainingSet("Quellcode","Quellcode",1.0),
+            new TrainingSet("Quellcod","Quellcode",0.85),
+            new TrainingSet("Quellkode","Quellcode",0.6),
+            new TrainingSet("Softwareentwicklung","Softwaredevelopment",0.0),
+            new TrainingSet("Softwareentwickler","Softwareentwicklung",0.2),
+            new TrainingSet("Software","Softwareentwicklung",0.2),
+            new TrainingSet("Entwicklungsumgebung","Entwicklungsumgebung",1.0),
+            new TrainingSet("Entwicklungs","Entwicklungsumgebung",0.2),
+            new TrainingSet("Programmiersprache","Programmiersprache",1.0),
+            new TrainingSet("Programiersprache","Programmiersprache",0.9),
+            new TrainingSet("Programmiersprahe","Programmiersprache",0.75),
+            new TrainingSet("Programmierung","Programmiersprache",0.2),
+            new TrainingSet("Programmierer","Programmiersprache",0.1),
+            new TrainingSet("Rechtschreibkorrektur","Rechtschreibkorrektur",1.0),
+            new TrainingSet("Rechtschreibkorrekturr","Rechtschreibkorrektur",0.9),
+            new TrainingSet("Rechtschreib","Rechtschreibkorrektur",0.35),
+            new TrainingSet("Rechtschreibung","Rechtschreibkorrektur",0.25),
+            new TrainingSet("Autoversicherung","Autoversicherung",1.0),
+            new TrainingSet("Autoversicherungn","Autoversicherung",0.8),
+            new TrainingSet("Autoversicherng","Autoversicherung",0.6),
+            new TrainingSet("Baumkrone","Baumkrone",1.0),
+            new TrainingSet("Baumkrn","Baumkrone",0.55),
+            new TrainingSet("Baumstamm","Baumstamm",1.0),
+            new TrainingSet("Baumstam","Baumstamm",0.6),
+            new TrainingSet("Baumhaus","Baumhaus",1.0),
+            new TrainingSet("Baumhausn","Baumhaus",0.7),
+            new TrainingSet("Baumaterial","Baum",0.0),
+
+            new TrainingSet("Testumgebung","Test",0.0),
+            new TrainingSet("Testdaten","Test",0.0),
+            new TrainingSet("Testbericht","Test",0.0),
+            new TrainingSet("Mailkonto","Mail",0.0),
+            new TrainingSet("Mailbox128","Mail",0.0),
+            new TrainingSet("Mailing","Mail",0.1),
+            new TrainingSet("Codebasis","Code",0.0),
+            new TrainingSet("Codeanalyse","Code",0.0),
+            new TrainingSet("CodeReview","Code",0.0),
+            new TrainingSet("Datenbankverbindung","Datenbankverbindung",1.0),
+            new TrainingSet("Datenbank","Datenbankverbindung",0.2),
+            new TrainingSet("Datenbankzugang","Datenbankverbindung",0.0),
+            new TrainingSet("Datenverarbeitungssystem","Datenverarbeitung",0.0),
+            new TrainingSet("Informationsverarbeitung","Informationsverarbeitung",1.0),
+            new TrainingSet("Informations","Informationsverarbeitung",0.1),
+            new TrainingSet("Systemkonfiguration","Systemkonfiguration",1.0),
+            new TrainingSet("Systemconf","Systemkonfiguration",0.6),
+            new TrainingSet("Anwendungsentwicklung","Anwendungsentwicklung",1.0),
+            new TrainingSet("Anwendungsentwickler","Anwendungsentwicklung",0.2),
+            new TrainingSet("Benutzeroberfläche","Benutzeroberfläche",1.0),
+            new TrainingSet("Benutzeroberflächen","Benutzeroberfläche",0.6),
+            new TrainingSet("Fehlerbehandlung","Fehlerbehandlung",1.0),
+            new TrainingSet("Fehlerbehandl","Fehlerbehandlung",0.6),
+            new TrainingSet("Fehleranalyse","Fehlerbehandlung",0.2),
+
+            new TrainingSet("","Java",0.0),
+            new TrainingSet(" ","Java",0.0),
+            new TrainingSet("1234","Test",0.0),
+            new TrainingSet("!!!","Mail",0.0),
+            new TrainingSet("aaaaaaaa","Java",0.0),
+            new TrainingSet("qwertz","Code",0.0),
+            new TrainingSet("loremipsum","Life",0.0),
+            new TrainingSet("j","Java",0.25),
+            new TrainingSet("ja","Java",0.5),
+            new TrainingSet("jav","Java",0.75),
+            new TrainingSet("javaa","Java",0.8),
+            new TrainingSet("JAVA","Java",0.95),
+            new TrainingSet("java","Java",0.98),
+            new TrainingSet("JaVa","Java",0.9),
+
+            new TrainingSet("Baue","Baum",0.6),
+            new TrainingSet("Baume","Baum",0.65),
+            new TrainingSet("Baums","Baum",0.45),
+            new TrainingSet("Baumwald","Baum",0.0),
+            new TrainingSet("Baumkranz","Baum",0.0),
+            new TrainingSet("Baumrinde","Baum",0.0),
+            new TrainingSet("Reifendrucktest","Reif",0.0),
+            new TrainingSet("Reifentest","Reif",0.0),
+            new TrainingSet("Windenergie","Wind",0.0),
+            new TrainingSet("Windstille","Wind",0.0),
+            new TrainingSet("Mailingliste","Mail",0.0),
+            new TrainingSet("Mail-forward","Mail",0.0),
+            new TrainingSet("Autoupdate","Auto",0.0),
+            new TrainingSet("Autoteile","Auto",0.0),
+            new TrainingSet("Bootswerft","Boot",0.0),
+            new TrainingSet("Bootcamp","Boot",0.0),
+            new TrainingSet("Codegenerator","Code",0.0),
+            new TrainingSet("Codefragment","Code",0.0),
+            new TrainingSet("Testdatenbank","Test",0.0),
+            new TrainingSet("Testcase","Test",0.0),
+            new TrainingSet("Loveletter","Love",0.0),
+            new TrainingSet("Lovesong","Love",0.0),
+            new TrainingSet("Lifeguard","Life",0.0),
+            new TrainingSet("Lifeboat","Life",0.0),
+
+            new TrainingSet("Reiph","Reif",0.5),
+            new TrainingSet("Reifung","Reif",0.25),
+            new TrainingSet("Reifer","Reif",0.3),
+            new TrainingSet("Winded","Wind",0.1),
+            new TrainingSet("Windy","Wind",0.1),
+            new TrainingSet("Hausmeister","Haus",0.0),
+            new TrainingSet("Hausarbeit","Haus",0.0),
+            new TrainingSet("Autokauf","Auto",0.0),
+            new TrainingSet("Autofahren","Auto",0.0),
+            new TrainingSet("CodeReview","Code",0.0),
+            new TrainingSet("CodeQuality","Code",0.0),
+            new TrainingSet("Mailadresse","Mail",0.0),
+            new TrainingSet("Mailclient","Mail",0.0),
+            new TrainingSet("Bootfahrt","Boot",0.0),
+            new TrainingSet("Bootrennen","Boot",0.0),
+            new TrainingSet("Windhose","Wind",0.0),
+
+            new TrainingSet("Tst","Test",0.55),
+            new TrainingSet("Teest","Test",0.5),
+            new TrainingSet("C0de","Code",0.4),
+            new TrainingSet("K0de","Code",0.4),
+            new TrainingSet("Mailz","Mail",0.4),
+            new TrainingSet("Maal","Mail",0.45),
+            new TrainingSet("Autto","Auto",0.5),
+            new TrainingSet("Aauto","Auto",0.45),
+            new TrainingSet("B0ot","Boot",0.45),
+            new TrainingSet("Bo0t","Boot",0.45),
+
+            new TrainingSet("Programmierumgebung","Programmiersprache",0.1),
+            new TrainingSet("Programmierwerkzeug","Programmiersprache",0.0),
+            new TrainingSet("Softwarearchitektur","Softwareentwicklung",0.0),
+            new TrainingSet("Softwaretester","Softwareentwicklung",0.1),
+            new TrainingSet("Informationssicherheit","Informationsverarbeitung",0.0),
+            new TrainingSet("Datenverarbeitungszentrum","Datenverarbeitung",0.0),
+            new TrainingSet("Konfigurationsdatei","Systemkonfiguration",0.0),
+            new TrainingSet("Benutzerverwaltung","Benutzeroberfläche",0.0),
+            new TrainingSet("Fehlerdiagnose","Fehlerbehandlung",0.0),
+            new TrainingSet("Fehlerprotokoll","Fehlerbehandlung",0.0)
+    );
+
+    public static List<List<String>> input = trainingSets.stream()
+            .map(ts -> List.of(ts.input, ts.dictionary))
+            .collect(Collectors.toList());
+
+    public static double[][] targets = trainingSets.stream()
+            .map(ts -> new double[]{ ts.label })
+            .toArray(double[][]::new);
+
 }
