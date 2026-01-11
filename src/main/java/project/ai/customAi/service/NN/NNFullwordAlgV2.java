@@ -99,15 +99,24 @@ public class NNFullwordAlgV2 implements AiAlgorithm {
             result.put("correct", String.valueOf(correct));
             result.put("total", String.valueOf(total));
 
-            String inputWord = FullwordPreperator.cleanWord("Abbel");//gehen, testn, opfel,
+            String inputWord = FullwordPreperator.cleanWord("vegadiv");//gehen, testn, opfel, abbel, vegadiv, negetiv
             double bestScore = Double.NEGATIVE_INFINITY;
 
             // prefilter using levenshtein-distance
-            List<String> candidates = FullwordTrainingParameterV2.fullDictionary
-                    .stream()
-                    .filter(w -> featureCalculation.isDistanceLE(inputWord, w, 2))
-                    .limit(200)
-                    .toList();
+            List<String> candidates = new ArrayList<>();
+            int distance = 2;
+            while(candidates.isEmpty()) {
+                int finalDistance = distance;
+                candidates = FullwordTrainingParameterV2.fullDictionary
+                        .stream()
+                        .map(String::toLowerCase)
+                        .distinct()
+                        .filter(w -> featureCalculation.isDistanceLE(inputWord, w, finalDistance))
+                        .limit(200)
+                        .toList();
+
+                distance++;
+            }
 
             @Data
             @AllArgsConstructor

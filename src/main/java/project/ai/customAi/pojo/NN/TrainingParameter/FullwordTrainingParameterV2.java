@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FullwordTrainingParameterV2 implements BaseTrainingParameter {
 
-    public static final int numberOfEpochs = 500_000;
-    public static final double learningRate = 0.01;
+    public static final int numberOfEpochs = 150_000;
+    public static final double learningRate = 0.015;
     public static final ActivationFunction activationFunction = ActivationFunction.SIGMOID;
     public static final double faultTolerance = 0.1;
 
@@ -35,42 +35,41 @@ public class FullwordTrainingParameterV2 implements BaseTrainingParameter {
     }
 
     public static List<List<String>> testInput = List.of(
-            List.of("Bamm", "Baum"),     // Doppelbuchstabe
-            List.of("Boum", "Baum"),     // Vokalwechsel
-            List.of("Pual", "Paul"),     // Vertauschung
-            List.of("Pau",  "Paul"),     // fehlender Buchstabe
-
-            List.of("Gava", "Java"),     // phonetisch
-            List.of("Jafa", "Java"),     // Konsonantenwechsel
-            List.of("Jvaa", "Java"),     // Swap
-
-            List.of("Lief", "Life"),     // Vokalwechsel
-            List.of("Live", "Life"),     // phonetisch
-            List.of("Lyfe", "Life"),     // starker Vokalwechsel
-
-            List.of("Laab", "Laub"),     // Doppelvokal
-            List.of("Lub",  "Laub"),     // Auslassung
-
-            List.of("Tets", "Test"),     // Swap
-            List.of("Tast", "Test"),     // Vokalfehler
-
-            List.of("Huas", "Haus"),     // Swap
-            List.of("Houz", "Haus"),     // phonetisch
-
-            List.of("Aoto", "Auto"),     // Swap
-            List.of("Oto",  "Auto"),     // Auslassung
-
-            List.of("Cdoe", "Code"),     // Swap
-            List.of("Kood", "Boot"),     // phonetisch
-
-            List.of("Bott", "Boot"),     // Doppelkonsonant
-            List.of("Bot",  "Boot"),     // fehlender Buchstabe
-
-            List.of("Meil", "Mail"),     // phonetisch
-            List.of("Mial", "Mail"),     // Swap
-
-            List.of("Wint", "Wind"),     // Konsonant nah
-            List.of("Wynd", "Wind")      // starker Vokalwechsel
+            List.of("Baumm", "Baum"),
+            List.of("Paull", "Paul"),
+            List.of("Jaava", "Java"),
+            List.of("Lofe", "Love"),
+            List.of("Lif", "Life"),
+            List.of("Tesst", "Test"),
+            List.of("Maill", "Mail"),
+            List.of("Boott", "Boot"),
+            List.of("Windd", "Wind"),
+            List.of("Hausz", "Haus"),
+            List.of("Autoo", "Auto"),
+            List.of("Codee", "Code"),
+            List.of("Baumhous", "Baumhaus"),
+            List.of("Autobaan", "Autobahn"),
+            List.of("Mailserwer", "Mailserver"),
+            List.of("Bootshauss", "Bootshaus"),
+            List.of("Hausverwaltug", "Hausverwaltung"),
+            List.of("Reifendruk", "Reifendruck"),
+            List.of("Quellcod", "Quellcode"),
+            List.of("Softwareentwicklng", "Softwareentwicklung"),
+            List.of("Programmierspraache", "Programmiersprache"),
+            List.of("Rechtschreibkorektur", "Rechtschreibkorrektur"),
+            List.of("Datenverarbeitng", "Datenverarbeitung"),
+            List.of("Informationsverarbietung", "Informationsverarbeitung"),
+            List.of("Benutzeroberflache", "Benutzeroberfläche"),
+            List.of("Fehlerbehandlng", "Fehlerbehandlung"),
+            List.of("Datenbankverbindng", "Datenbankverbindung"),
+            List.of("Systemkonfiguraton", "Systemkonfiguration"),
+            List.of("Anwendungsentwiclung", "Anwendungsentwicklung"),
+            List.of("Testframwork", "Testframework"),
+            List.of("Entwicklungsumbegung", "Entwicklungsumgebung"),
+            List.of("Autoversichrung", "Autoversicherung"),
+            List.of("Baumkron", "Baumkrone"),
+            List.of("Baumstam", "Baumstamm"),
+            List.of("Baumateriall", "Baumaterial")
     );
 
     @AllArgsConstructor
