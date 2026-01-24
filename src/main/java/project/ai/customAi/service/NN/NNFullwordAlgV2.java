@@ -2,6 +2,7 @@ package project.ai.customAi.service.NN;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -17,12 +18,15 @@ import java.time.Instant;
 import java.util.*;
 
 @Slf4j
-@Service
-@RequiredArgsConstructor
-@Profile("nnFullwordV2")
+//@Service
+//@RequiredArgsConstructor
 public class NNFullwordAlgV2 implements AiAlgorithm {
 
-    private final FeatureCalculation featureCalculation;
+    private FeatureCalculation featureCalculation;
+
+    public NNFullwordAlgV2(){
+        featureCalculation = new FeatureCalculation();
+    }
 
     @Override
     public Map<String, String> handleAlgorithm(String logicalOperation, Map<String, String> data) {
@@ -99,7 +103,7 @@ public class NNFullwordAlgV2 implements AiAlgorithm {
             result.put("correct", String.valueOf(correct));
             result.put("total", String.valueOf(total));
 
-            String inputWord = FullwordPreperator.cleanWord("vegadiv");//gehen, testn, opfel, abbel, vegadiv, negetiv
+            String inputWord = FullwordPreperator.cleanWord("verseentlic");//gehen, testn, opfel, abbel, vegadiv, negetiv
             double bestScore = Double.NEGATIVE_INFINITY;
 
             // prefilter using levenshtein-distance

@@ -1,7 +1,9 @@
 plugins {
     id 'java'
+    id 'application'
     id 'org.springframework.boot' version '3.3.4'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
 }
 
 group = 'project.ai'
@@ -34,4 +36,25 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+javafx {
+    version = "21"
+    modules = [ 'javafx.controls' ]
+}
+
+application {
+    mainClass = 'project.ai.customAi.CustomAiUi'
+}
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}
+
+bootRun {
+    enabled = false
 }

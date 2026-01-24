@@ -37,11 +37,11 @@ public abstract class AbstractAiAlgorithmJob implements CommandLineRunner {
             log.info(Prefix.clrStartup);
             log.info("{} {}", Prefix.clrArgs, args);
 
-            String keyword = Arrays.stream(args)
+            String keyword = "Test";/*Arrays.stream(args)
                     .filter(arg -> arg.contains("keyword="))
                     .map(arg -> arg.substring(arg.indexOf("=") + 1))
                     .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("Keyword must be set"));
+                    .orElseThrow(() -> new IllegalArgumentException("Keyword must be set"));*/
 
             Map<String, String> data = prepareData();
 
