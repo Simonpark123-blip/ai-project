@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 public abstract class AbstractAiAlgorithmJob implements CommandLineRunner {
@@ -45,7 +46,7 @@ public abstract class AbstractAiAlgorithmJob implements CommandLineRunner {
 
             Map<String, String> data = prepareData();
 
-            Map<String, String> result = algorithm.handleAlgorithm(keyword, data);
+            Map<String, String> result = algorithm.handleAlgorithm(keyword, data, new AtomicInteger(100_000));
 
             log.info("{}: {}",  Prefix.clrResult, result);
             log.info(Prefix.clrShutdown);

@@ -11,6 +11,7 @@ import project.ai.customAi.service.AiAlgorithm;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Service
@@ -19,7 +20,7 @@ import java.util.Map;
 public class NNNormalizedAlphanumericAlg implements AiAlgorithm {
 
     @Override
-    public Map<String, String> handleAlgorithm(String logicalOperation, Map<String, String> data) {
+    public Map<String, String> handleAlgorithm(String logicalOperation, Map<String, String> data, AtomicInteger epochs) {
         try {
             Instant started = Instant.now();
 

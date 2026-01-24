@@ -1,4 +1,4 @@
-package project.ai.customAi.ui.uiElements;
+package project.ai.customAi.ui.elements;
 
 import javafx.scene.control.ComboBox;
 

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import project.ai.customAi.service.AiAlgorithm;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Service
@@ -16,7 +17,7 @@ import java.util.*;
 public class StraightForwardAlg implements AiAlgorithm {
 
     @Override
-    public Map<String, String> handleAlgorithm(String keyword, Map<String, String> data) {
+    public Map<String, String> handleAlgorithm(String keyword, Map<String, String> data, AtomicInteger epochs) {
         try {
             Map<String, String> filteredQuestionAndAnswer = new HashMap<>();
 

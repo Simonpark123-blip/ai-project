@@ -9,6 +9,7 @@ import project.ai.customAi.pojo.perceptron.TrainingParameter;
 import project.ai.customAi.service.AiAlgorithm;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Service
@@ -17,10 +18,9 @@ import java.util.Map;
 public class PerceptronAlg implements AiAlgorithm {
 
     @Override
-    public Map<String, String> handleAlgorithm(String logicalOperation, Map<String, String> data) {
+    public Map<String, String> handleAlgorithm(String logicalOperation, Map<String, String> data, AtomicInteger epochs) {
         try {
-            int epochs = data != null && data.containsKey("epochs") ? Integer.parseInt(data.get("epochs")) : 100;
-            MachineLearning machineLearning = getMachineLearning(LogicalOperation.valueOf(logicalOperation), epochs);
+            MachineLearning machineLearning = getMachineLearning(LogicalOperation.valueOf(logicalOperation), epochs.get());
 
             // do algorithm
             log.info("Weights for neuron before training: {}, bias: {}", ProcessMonitoring.lastWeights,

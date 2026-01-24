@@ -2,13 +2,9 @@ package project.ai.customAi.service.NN;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
-import project.ai.customAi.pojo.NN.NetworkParameter.FullwordNetworkParameterV2;
-import project.ai.customAi.pojo.NN.TrainingParameter.FullwordTrainingParameterV2;
+import project.ai.customAi.pojo.NN.NetworkParameter.FeaturedFullwordNetworkParameter;
+import project.ai.customAi.pojo.NN.TrainingParameter.FeaturedFullwordTrainingParameter;
 import project.ai.customAi.service.AiAlgorithm;
 import project.ai.customAi.service.fullword.FeatureCalculation;
 import project.ai.customAi.service.fullword.FullwordPreperator;
@@ -16,36 +12,35 @@ import project.ai.customAi.service.fullword.FullwordPreperator;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
-//@Service
-//@RequiredArgsConstructor
-public class NNFullwordAlgV2 implements AiAlgorithm {
+public class NNFeaturedFullwordAlg implements AiAlgorithm {
 
-    private FeatureCalculation featureCalculation;
+    private final FeatureCalculation featureCalculation;
 
-    public NNFullwordAlgV2(){
+    public NNFeaturedFullwordAlg(){
         featureCalculation = new FeatureCalculation();
     }
 
     @Override
-    public Map<String, String> handleAlgorithm(String logicalOperation, Map<String, String> data) {
+    public Map<String, String> handleAlgorithm(String logicalOperation, Map<String, String> data, AtomicInteger epochs) {
         try {
             Instant started = Instant.now();
 
-            FullwordFFNV2 neuronalNetwork = new FullwordFFNV2(
-                    FullwordNetworkParameterV2.numberOfInputSignals,
-                    FullwordNetworkParameterV2.numberOfNeuronsInHiddenLayer,
-                    FullwordNetworkParameterV2.numberOfNeuronsInOutputLayer
+            FeaturedFullwordFFN neuronalNetwork = new FeaturedFullwordFFN(
+                    FeaturedFullwordNetworkParameter.numberOfInputSignals,
+                    FeaturedFullwordNetworkParameter.numberOfNeuronsInHiddenLayer,
+                    FeaturedFullwordNetworkParameter.numberOfNeuronsInOutputLayer
             );
 
             DisplayMachineLearning.showWeights(neuronalNetwork.getWeightsOfHiddenLayer(), neuronalNetwork.getWeightsOfOutputLayer());
 
             // Build training inputs
-            double[][] inputs = new double[FullwordTrainingParameterV2.input.size()][];
-            for (int i = 0; i < FullwordTrainingParameterV2.input.size(); i++) {
-                String inputWord = FullwordTrainingParameterV2.input.get(i).get(0);
-                String candidateWord = FullwordTrainingParameterV2.input.get(i).get(1);
+            double[][] inputs = new double[FeaturedFullwordTrainingParameter.input.size()][];
+            for (int i = 0; i < FeaturedFullwordTrainingParameter.input.size(); i++) {
+                String inputWord = FeaturedFullwordTrainingParameter.input.get(i).get(0);
+                String candidateWord = FeaturedFullwordTrainingParameter.input.get(i).get(1);
 
                 double[] features = featureCalculation.extractFeatures(inputWord.toLowerCase(Locale.ROOT), candidateWord.toLowerCase(Locale.ROOT));
                 inputs[i] = features;
@@ -53,26 +48,26 @@ public class NNFullwordAlgV2 implements AiAlgorithm {
                 log.info("Built features for training pair input='{}' candidate='{}' -> {}", inputWord, candidateWord, features);
             }
 
-            neuronalNetwork.testAllInputsAndShowResults(inputs, FullwordTrainingParameterV2.targets);
+            neuronalNetwork.testAllInputsAndShowResults(inputs, FeaturedFullwordTrainingParameter.targets);
 
-            neuronalNetwork.trainWithSupervisedLearning(inputs);
+            neuronalNetwork.trainWithSupervisedLearning(inputs, epochs);
 
             DisplayMachineLearning.showWeights(neuronalNetwork.getWeightsOfHiddenLayer(), neuronalNetwork.getWeightsOfOutputLayer());
-            neuronalNetwork.testAllInputsAndShowResults(inputs, FullwordTrainingParameterV2.targets);
+            neuronalNetwork.testAllInputsAndShowResults(inputs, FeaturedFullwordTrainingParameter.targets);
 
             // For each input, iterate entire dictionary, compute score for each dictionary word,
             //    pick the highest-scoring dictionary word and compare it with the expected target from training data
             int correct = 0;
-            int total = FullwordTrainingParameterV2.testInput.size();
+            int total = FeaturedFullwordTrainingParameter.testInput.size();
 
             for (int i = 0; i < total; i++) {
-                String inputWord = FullwordPreperator.cleanWord(FullwordTrainingParameterV2.testInput.get(i).get(0));
-                String expectedTarget = FullwordPreperator.cleanWord(FullwordTrainingParameterV2.testInput.get(i).get(1));
+                String inputWord = FullwordPreperator.cleanWord(FeaturedFullwordTrainingParameter.testInput.get(i).get(0));
+                String expectedTarget = FullwordPreperator.cleanWord(FeaturedFullwordTrainingParameter.testInput.get(i).get(1));
 
                 double bestScore = Double.NEGATIVE_INFINITY;
                 String bestCandidate = null;
 
-                for (String dictCandidate : FullwordTrainingParameterV2.dictionary) {
+                for (String dictCandidate : FeaturedFullwordTrainingParameter.dictionary) {
                     // normalize
                     String candNorm = FullwordPreperator.cleanWord(dictCandidate);
                     double[] features = featureCalculation.extractFeatures(inputWord.toLowerCase(Locale.ROOT), candNorm);
@@ -111,7 +106,7 @@ public class NNFullwordAlgV2 implements AiAlgorithm {
             int distance = 2;
             while(candidates.isEmpty()) {
                 int finalDistance = distance;
-                candidates = FullwordTrainingParameterV2.fullDictionary
+                candidates = FeaturedFullwordTrainingParameter.fullDictionary
                         .stream()
                         .map(String::toLowerCase)
                         .distinct()
@@ -152,7 +147,7 @@ public class NNFullwordAlgV2 implements AiAlgorithm {
 
             return result;
         } catch (Exception e) {
-            log.error("Error processing NNFullwordAlgV2", e);
+            log.error("Error processing NNFeaturedFullwordAlg", e);
             throw e;
         }
     }

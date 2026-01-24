@@ -10,9 +10,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class FullwordTrainingParameterV2 implements BaseTrainingParameter {
+public class FeaturedFullwordTrainingParameter implements BaseTrainingParameter {
 
-    public static final int numberOfEpochs = 150_000;
     public static final double learningRate = 0.015;
     public static final ActivationFunction activationFunction = ActivationFunction.SIGMOID;
     public static final double faultTolerance = 0.1;
@@ -21,7 +20,7 @@ public class FullwordTrainingParameterV2 implements BaseTrainingParameter {
 
     static List<String> retrieveDictionaryData() {
         List<String> dictionaryData = new ArrayList<>();
-        try(BufferedReader br = new BufferedReader(new FileReader(Objects.requireNonNull(FullwordTrainingParameterV2.class.getClassLoader().getResource("data/index.dic")).getPath()))) {
+        try(BufferedReader br = new BufferedReader(new FileReader(Objects.requireNonNull(FeaturedFullwordTrainingParameter.class.getClassLoader().getResource("data/index.dic")).getPath()))) {
             String line = br.readLine();
 
             while (line != null) {

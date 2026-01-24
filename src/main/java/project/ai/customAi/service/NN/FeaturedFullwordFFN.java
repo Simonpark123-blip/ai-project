@@ -1,17 +1,16 @@
 package project.ai.customAi.service.NN;
 
 import lombok.extern.slf4j.Slf4j;
-import project.ai.customAi.pojo.NN.NetworkParameter.FullwordNetworkParameterV2;
 import project.ai.customAi.pojo.NN.Neuron;
 import project.ai.customAi.pojo.NN.ProcessMonitoring;
-import project.ai.customAi.pojo.NN.TrainingParameter.FullwordTrainingParameter;
-import project.ai.customAi.pojo.NN.TrainingParameter.FullwordTrainingParameterV2;
+import project.ai.customAi.pojo.NN.TrainingParameter.FeaturedFullwordTrainingParameter;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
 @Slf4j
-public class FullwordFFNV2 {
+public class FeaturedFullwordFFN {
 
     private final ArrayList<Neuron> hiddenLayer = new ArrayList<>();
     private final ArrayList<Neuron> outputLayer = new ArrayList<>();
@@ -23,13 +22,13 @@ public class FullwordFFNV2 {
 
     private final Random rnd = new Random();
 
-    public FullwordFFNV2(int inputCount, int hiddenLayerNeurons, int outputLayerNeurons) {
+    public FeaturedFullwordFFN(int inputCount, int hiddenLayerNeurons, int outputLayerNeurons) {
         buildLayer(inputCount, hiddenLayerNeurons, hiddenLayer);
         buildLayer(hiddenLayerNeurons, outputLayerNeurons, outputLayer);
 
         lastHiddenOutputs = new double[hiddenLayerNeurons];
         lastOutputs = new double[outputLayerNeurons];
-        scores = new double[FullwordTrainingParameterV2.input.size()];
+        scores = new double[FeaturedFullwordTrainingParameter.input.size()];
 
         ProcessMonitoring.lastOutputs = lastOutputs;
         ProcessMonitoring.lastOutputsFromHiddenLayer = lastHiddenOutputs;
@@ -73,21 +72,21 @@ public class FullwordFFNV2 {
         ProcessMonitoring.lastOutputsFromHiddenLayer = lastHiddenOutputs;
     }
 
-    public void trainWithSupervisedLearning(double[][] inputs) {
+    public void trainWithSupervisedLearning(double[][] inputs, AtomicInteger epochs) {
         int trainingCaseCount = inputs.length;
 
         // indices to shuffle
         List<Integer> indices = IntStream.range(0, trainingCaseCount).collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
 
         // iterate through epochs
-        for (int epoch = 1; epoch <= FullwordTrainingParameterV2.numberOfEpochs; epoch++) {
+        for (int epoch = 1; epoch <= epochs.get(); epoch++) {
 
             Collections.shuffle(indices, rnd);
 
             // iterate through testCases
             for (int idx : indices) {
                 double[] trainingInput = inputs[idx];
-                double[] expectedOutput = FullwordTrainingParameterV2.targets[idx];
+                double[] expectedOutput = FeaturedFullwordTrainingParameter.targets[idx];
 
                 // forward
                 calculateOutput(trainingInput);
@@ -97,11 +96,11 @@ public class FullwordFFNV2 {
             }
 
             // logging (current epoch)
-            if (epoch % 1000 == 0 || epoch == FullwordTrainingParameterV2.numberOfEpochs) {
+            if (epoch % 1000 == 0 || epoch == epochs.get()) {
                 double totalErr = 0.0;
                 for (int i = 0; i < trainingCaseCount; i++) {
                     calculateOutput(inputs[i]);
-                    totalErr += calculateTotalError(FullwordTrainingParameterV2.targets[i]);
+                    totalErr += calculateTotalError(FeaturedFullwordTrainingParameter.targets[i]);
                 }
                 totalErr /= trainingCaseCount;
                 log.info("Epoch {} - avg total error: {}", epoch, totalErr);
@@ -155,12 +154,12 @@ public class FullwordFFNV2 {
             // update weights (without bias)
             for (int currentWeightIndex = 0; currentWeightIndex < weightCount - 1; currentWeightIndex++) {
                 double oldWeight = currentNeuron.getWeight(currentWeightIndex);
-                double deltaWeight = FullwordTrainingParameterV2.learningRate * delta[i] * input[currentWeightIndex];
+                double deltaWeight = FeaturedFullwordTrainingParameter.learningRate * delta[i] * input[currentWeightIndex];
                 currentNeuron.setWeight(currentWeightIndex, oldWeight - deltaWeight);
             }
             // update bias (last weight)
             double biasOld = currentNeuron.getWeight(weightCount - 1);
-            currentNeuron.setWeight(weightCount - 1, biasOld - FullwordTrainingParameterV2.learningRate * delta[i]);
+            currentNeuron.setWeight(weightCount - 1, biasOld - FeaturedFullwordTrainingParameter.learningRate * delta[i]);
         }
     }
 
@@ -177,7 +176,7 @@ public class FullwordFFNV2 {
             boolean areAllOutputsOK = true;
             for (int j = 0; j < targets[i].length; j++) {
                 scores[i] = lastOutputs[j];
-                if (Math.abs(lastOutputs[j] - targets[i][j]) > FullwordTrainingParameterV2.faultTolerance) {
+                if (Math.abs(lastOutputs[j] - targets[i][j]) > FeaturedFullwordTrainingParameter.faultTolerance) {
                     areAllOutputsOK = false;
                     break;
                 }
@@ -198,7 +197,7 @@ public class FullwordFFNV2 {
     }
 
     private double applyActivation(double value) {
-        return switch (FullwordTrainingParameterV2.activationFunction) {
+        return switch (FeaturedFullwordTrainingParameter.activationFunction) {
             case SIGMOID -> 1.0 / (1.0 + Math.exp(-value));
             case HEAVISIDE -> value >= 0.0 ? 1.0 : 0.0;
             case TANH -> Math.tanh(value);
@@ -207,11 +206,11 @@ public class FullwordFFNV2 {
     }
 
     private double activationDerivative(double activatedValue) {
-        return switch (FullwordTrainingParameterV2.activationFunction) {
+        return switch (FeaturedFullwordTrainingParameter.activationFunction) {
             case SIGMOID -> activatedValue * (1.0 - activatedValue);
             case ONLYSUM -> 1.0;
             case TANH -> 1 - Math.pow(activatedValue, 2);
-            default -> throw new IllegalStateException("Not differentiable activation function: " + FullwordTrainingParameterV2.activationFunction);
+            default -> throw new IllegalStateException("Not differentiable activation function: " + FeaturedFullwordTrainingParameter.activationFunction);
         };
     }
 
