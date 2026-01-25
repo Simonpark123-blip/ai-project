@@ -24,7 +24,7 @@ public class NNFeaturedFullwordAlg implements AiAlgorithm {
     }
 
     @Override
-    public Map<String, String> handleAlgorithm(String logicalOperation, Map<String, String> data, AtomicInteger epochs) {
+    public Map<String, String> handleAlgorithm(String userInput, Map<String, String> data, AtomicInteger epochs) {
         try {
             Instant started = Instant.now();
 
@@ -98,7 +98,9 @@ public class NNFeaturedFullwordAlg implements AiAlgorithm {
             result.put("correct", String.valueOf(correct));
             result.put("total", String.valueOf(total));
 
-            String inputWord = FullwordPreperator.cleanWord("verseentlic");//gehen, testn, opfel, abbel, vegadiv, negetiv
+            log.info("Model successfully trained with result: {}", result);
+
+            String inputWord = FullwordPreperator.cleanWord(userInput);//gehen, testn, opfel, abbel, vegadiv, negetiv, verseentlic
             double bestScore = Double.NEGATIVE_INFINITY;
 
             // prefilter using levenshtein-distance
@@ -141,11 +143,11 @@ public class NNFeaturedFullwordAlg implements AiAlgorithm {
             }
 
             bestCandidates.sort(Comparator.comparing(Candidate::getScore).reversed());
-            log.info("Best candidate is: {}", bestCandidates.getFirst().getValue());
+            log.info("Best candidate for input {} is: {}", inputWord, bestCandidates.getFirst().getValue());
             log.info("Best score is: {}", bestScore);
             log.info("All {} good candidates (best -> worst): {}", bestCandidates.size(), bestCandidates.toArray());
 
-            return result;
+            return Map.of("result", "'" + bestCandidates.getFirst().getValue() + "' was evaluated with a score of " + Math.round(bestScore*100) + "%");
         } catch (Exception e) {
             log.error("Error processing NNFeaturedFullwordAlg", e);
             throw e;

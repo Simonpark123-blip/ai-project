@@ -1,13 +1,15 @@
 package project.ai.customAi.ui.stages;
 
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import lombok.extern.slf4j.Slf4j;
 import project.ai.customAi.service.NN.*;
 import project.ai.customAi.ui.elements.ComboboxPrefab;
+import project.ai.customAi.ui.elements.TextPrefab;
+import project.ai.customAi.ui.enums.ActionType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +27,7 @@ public class Settings {
     private final NNAlphanumericAlg alphanumericAlg;
     private final NNBinaryAlg binaryAlg;
 
-    public Settings(){
+    public Settings() {
         featuredFullwordAlg = new NNFeaturedFullwordAlg();
         fullwordAlg = new NNFullwordAlg();
         normalizedAlphanumericAlg = new NNNormalizedAlphanumericAlg();
@@ -33,122 +35,166 @@ public class Settings {
         binaryAlg = new NNBinaryAlg();
     }
 
-    public void metaConfig(Stage stage){
-        stage.setTitle("Custom AI - Configuration");
-        stage.setScene(getConfigScene());
-    }
+    public Scene getConfigScene(StackPane parent) {
+        VBox contentBox = new VBox(15);
+        contentBox.setPrefWidth(400);
+        TextPrefab errorText = new TextPrefab(null, 0, "error-text");
 
-    private Scene getConfigScene() {
-        Group root = getConfigSceneGroup();
-        Scene configScene = new Scene(root,500,700);
+        AtomicReference<String> profile = getProfileSelectionElements(contentBox);
+        AtomicReference<AtomicInteger> epochsRef = new AtomicReference<>();
+        AtomicReference<ActionType> actionType = new AtomicReference<>();
+        TextField userInputField = new TextField("Your word...");
 
+        getActionSelection(contentBox, profile, epochsRef, actionType, userInputField, errorText);
+        contentBox.getChildren().add(errorText);
+        parent.getChildren().add(contentBox);
+
+        Scene configScene = new Scene(parent, 500, 700);
         configScene.getStylesheets().add(
                 Objects.requireNonNull(getClass().getResource("/styling/configSceneStyle.css")).toExternalForm()
         );
-
         return configScene;
     }
 
-    private Group getConfigSceneGroup() {
-        Group root = new Group();
+    private void getActionSelection(
+            VBox parent,
+            AtomicReference<String> profile,
+            AtomicReference<AtomicInteger> epochsRef,
+            AtomicReference<ActionType> actionType,
+            TextField userInputField,
+            TextPrefab errorText
+    ) {
+        Button testModel = new Button("Test model");
+        Button trainModel = new Button("Train model");
+        Button trainAndTestModel = new Button("Train and test model");
 
-        // init error-handling
-        List<String> errorList = new ArrayList<>();
-        Text errorText = new Text();
-        errorText.getStyleClass().add("error-text");
-        errorText.setLayoutY(340);
+        // Train
+        trainModel.setOnAction(e -> {
+            epochsRef.set(getEpochsElements(parent));
+            actionType.set(ActionType.TRAINING);
+        });
 
-        // get all other elements
-        AtomicReference<String> profile = getProfileSelectionElements(root);
-        AtomicInteger epochs = getEpochsElements(root);
-        getStartButtonElements(profile, epochs, root, errorList, errorText);
+        // Train & Test
+        trainAndTestModel.setOnAction(e -> {
+            epochsRef.set(getEpochsElements(parent));
+            actionType.set(ActionType.TRAINING_AND_TESTING);
+            if (!parent.getChildren().contains(userInputField)) {
+                parent.getChildren().add(userInputField);
+            }
+        });
 
-        root.getChildren().add(errorText);
-        return root;
+        // Test
+        testModel.setOnAction(e -> {
+            actionType.set(ActionType.TESTING);
+            if (!parent.getChildren().contains(userInputField)) {
+                parent.getChildren().add(userInputField);
+            }
+        });
+
+        // Start Button
+        getStartButtonElements(profile, epochsRef, parent, userInputField, errorText, actionType);
+
+        parent.getChildren().addAll(testModel, trainModel, trainAndTestModel);
     }
 
-    private void getStartButtonElements(AtomicReference<String> profile, AtomicInteger epochs, Group root, List<String> errorList, Text errorText) {
+    private void getStartButtonElements(
+            AtomicReference<String> profile,
+            AtomicReference<AtomicInteger> epochsRef,
+            VBox parent,
+            TextField userInputField,
+            TextPrefab errorText,
+            AtomicReference<ActionType> actionType
+    ) {
         Button startModel = new Button("Start Model");
+        TextPrefab resultText = new TextPrefab(null, 0, "success-text");
 
-        startModel.setLayoutY(300.f);
         startModel.setOnAction(e -> {
-            errorList.clear();
+            List<String> errorList = new ArrayList<>();
+            AtomicInteger epochs = epochsRef.get();
 
-            if(epochs.get() == 0){
-                log.warn("No epochs selected!");
-                errorList.add("Please select epochs for starting a model! ");
+            if (ActionType.TESTING.equals(actionType.get())) {
+                if (userInputField.getText().isEmpty()) {
+                    errorList.add("Please enter a word!");
+                    log.warn("No userInput detected!");
+                }
+            } else if (ActionType.TRAINING.equals(actionType.get())) {
+                if (epochs == null || epochs.get() == 0) {
+                    errorList.add("Please select epochs for starting a model!");
+                    log.warn("No epochs selected!");
+                }
+            } else if (ActionType.TRAINING_AND_TESTING.equals(actionType.get())) {
+                if (userInputField.getText().isEmpty()) {
+                    errorList.add("Please enter a word!");
+                    log.warn("No userInput detected!");
+                }
+                if (epochs == null || epochs.get() == 0) {
+                    errorList.add("Please select epochs to start a model!");
+                    log.warn("No epochs selected!");
+                }
+                if (epochs != null && epochs.get() != 0 && !userInputField.getText().isEmpty()) {
+                    resultText.setText(handleAlgorithmExec(profile, epochs, errorList, userInputField));
+                }
             }
 
-            switch(profile.get()){
-                case "featured-fullword" -> featuredFullwordAlg.handleAlgorithm(null, null, epochs);
-                case "fullword" -> fullwordAlg.handleAlgorithm(null, null, epochs);
-                case "normalized-alphanumeric" -> normalizedAlphanumericAlg.handleAlgorithm(null, null, epochs);
-                case "alphanumeric" -> alphanumericAlg.handleAlgorithm(null, null, epochs);
-                case "binary" -> binaryAlg.handleAlgorithm(null, null, epochs);
-                default -> errorList.add("Please select a valid model!");
-            }
-
-            // set error-messages
             if (!errorList.isEmpty()) {
                 errorText.setText(String.join("\n", errorList));
-                errorText.toFront();
             } else {
                 errorText.setText("");
             }
         });
 
-        root.getChildren().add(startModel);
-
+        parent.getChildren().addAll(startModel, resultText);
     }
 
-    private AtomicInteger getEpochsElements(Group root) {
-        Text epochsText = new Text();
-        epochsText.setLayoutY(200.f);
-
+    private AtomicInteger getEpochsElements(VBox parent) {
         AtomicInteger epochs = new AtomicInteger();
-        String[] epochsValues = IntStream.iterate(10000, i -> i + 10000).limit(100).boxed().map(Object::toString).map(Object::toString).toArray(String[]::new);
+        TextPrefab epochsText = new TextPrefab(null, 0, null);
 
-        ComboboxPrefab epochsDropdown = new ComboboxPrefab("Select a number of epochs", epochsValues);
-        epochsDropdown.setLayoutY(160.f);
+        String[] epochsValues = IntStream.iterate(1000, i -> i + 1000)
+                .limit(500)
+                .mapToObj(String::valueOf)
+                .toArray(String[]::new);
+
+        ComboboxPrefab epochsDropdown = new ComboboxPrefab("Select number of epochs", epochsValues, 0);
         epochsDropdown.valueProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
-                epochsText.setText("Chosen epochs: " + newVal);
                 epochs.set(Integer.parseInt(newVal));
+                epochsText.setText("Chosen epochs: " + newVal);
             }
         });
-        root.getChildren().add(epochsDropdown);
-        root.getChildren().add(epochsText);
 
+        parent.getChildren().addAll(epochsDropdown, epochsText);
         return epochs;
     }
 
-    private AtomicReference<String> getProfileSelectionElements(Group root) {
+    private AtomicReference<String> getProfileSelectionElements(VBox parent) {
         AtomicReference<String> profile = new AtomicReference<>("");
+        TextPrefab profileText = new TextPrefab(null, 0, null);
         String[] profiles = {"binary", "alphanumeric", "normalized-alphanumeric", "fullword", "featured-fullword"};
-        Text profileText = new Text();
-        profileText.setLayoutY(150.f);
 
-        ComboboxPrefab profileDropdown = new ComboboxPrefab("Select profile", profiles);
-        profileDropdown.setLayoutY(110.f);
+        ComboboxPrefab profileDropdown = new ComboboxPrefab("Select profile", profiles, 0);
         profileDropdown.valueProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null && !newVal.isEmpty()) {
-                profileText.setText("Custom-AI starting with the following chosen profile: " + newVal);
                 profile.set(newVal);
+                profileText.setText("Custom-AI starting with profile: " + newVal);
             }
         });
 
-        root.getChildren().add(profileDropdown);
-        root.getChildren().add(profileText);
+        parent.getChildren().addAll(profileDropdown, profileText);
         return profile;
     }
 
+    private String handleAlgorithmExec(AtomicReference<String> profile, AtomicInteger epochs, List<String> errorList, TextField userInputField) {
+        return String.valueOf(switch (profile.get()) {
+            case "featured-fullword" -> featuredFullwordAlg.handleAlgorithm(userInputField.getText(), null, epochs).get("result");
+            case "fullword" -> fullwordAlg.handleAlgorithm(null, null, epochs);
+            case "normalized-alphanumeric" -> normalizedAlphanumericAlg.handleAlgorithm(null, null, epochs);
+            case "alphanumeric" -> alphanumericAlg.handleAlgorithm(null, null, epochs);
+            case "binary" -> binaryAlg.handleAlgorithm(null, null, epochs);
+            default -> {
+                errorList.add("Please select a valid model!");
+                yield true;
+            }
+        });
+    }
 }
-
-//        Button addFieldButton = new Button("Add Input Field");
-//
-//        addFieldButton.setOnAction(e -> {
-//            TextField newField = new TextField();
-//            newField.setPromptText("Enter text here...");
-//            root.getChildren().add(newField);
-//        });
-//        root.getChildren().add(addFieldButton);

@@ -3,3 +3,9 @@
     -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
+
+.success-text {
+    -fx-fill: green;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
